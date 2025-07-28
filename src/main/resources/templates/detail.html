@@ -12,6 +12,9 @@
 <p th:text="${post.content}">글 내용</p>
 <a href="/posts">목록으로</a>
 <a th:href="@{'/posts/' + ${post.id} + '/edit'}">수정</a>
-
+<form th:action="@{'/posts/' + ${post.id}}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+    <input type="hidden" name="_method" value="delete" />
+    <button type="submit">삭제</button>
+</form>
 </body>
 </html>

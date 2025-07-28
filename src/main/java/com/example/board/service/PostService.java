@@ -9,9 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -50,4 +47,16 @@ public class PostService {
     }
 
 
+    public Page<Post> search(String type, String keyword, Pageable pageable) {
+        switch(type) {
+            case "title":
+                return postRepository.findByTitleContaining(keyword, pageable);
+            case "content":
+                return postRepository.findByContentContaining(keyword, pageable);
+            case "author":
+                return postRepository.findByAuthorContaining(keyword, pageable);
+            default:
+                return postRepository.findAll(pageable);
+        }
+    }
 }

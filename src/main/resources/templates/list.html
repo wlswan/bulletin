@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8" />
     <title>게시글 목록</title>
+    <style>
+        .active {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<h1>게시글 목록</h1>
+<h1> <a th:href="@{'/posts'}" style="text-decoration: none;">게시글 목록</a></h1>
 <a href="/posts/new">글 작성하기</a>
 
+
+<!-- 게시글 목록 -->
 <ul>
     <li th:each="post : ${page.content}">
         <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">글 제목</a>
@@ -15,25 +23,30 @@
         <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
     </li>
 </ul>
-<!-- 페이지 정보 -->
-<div>
-    <span>현재 페이지: <span th:text="${nowPage}">1</span> / <span th:text="${page.totalPages}">1</span></span>
-</div>
+
+<!-- 페이지 정보 --><!-- 🔍 검색 폼 -->
+<form th:action="@{/posts}" method="get">
+    <select name="type">
+        <option value="title" th:selected="${type == 'title'}">제목</option>
+        <option value="content" th:selected="${type == 'content'}">내용</option>
+        <option value="author" th:selected="${type == 'author'}">작성자</option>
+    </select>
+    <input type="text" name="keyword" th:value="${keyword}" placeholder="검색어 입력"/>
+    <button type="submit">검색</button>
+</form>
 
 <!-- 페이지 이동 버튼 -->
 <div>
-    <a th:if="${nowPage > 1}" th:href="@{/posts(page=${nowPage - 2})}">이전</a>
+    <a th:if="${nowPage > 1}" th:href="@{/posts(page=${nowPage - 2}, type=${type}, keyword=${keyword})}">이전</a>
 
     <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
-        <a th:href="@{/posts(page=${i - 1})}"
+        <a th:href="@{/posts(page=${i - 1}, type=${type}, keyword=${keyword})}"
            th:text="${i}"
            th:classappend="${i == nowPage} ? 'active' : ''">
         </a>
     </span>
 
-    <a th:if="${nowPage < page.totalPages}" th:href="@{/posts(page=${nowPage})}">다음</a>
+    <a th:if="${nowPage < page.totalPages}" th:href="@{/posts(page=${nowPage}, type=${type}, keyword=${keyword})}">다음</a>
 </div>
-
-
 </body>
 </html>

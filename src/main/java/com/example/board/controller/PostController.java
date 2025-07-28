@@ -26,8 +26,18 @@ public class PostController {
 //        return "list";
 //    }
 @GetMapping
-public String list(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, Model model) {
-    Page<Post> postPage = postService.findAll(pageable);
+public String list(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+        , @RequestParam(required = false) String type
+        , @RequestParam(required = false) String keyword
+        ,Model model) {
+    Page<Post> postPage;
+
+    if(type != null && keyword !=null && !keyword.isEmpty()) {
+        postPage = postService.search(type,keyword,pageable);
+    }
+    else {
+        postPage = postService.findAll(pageable);
+    }
 
     int nowPage = postPage.getNumber() + 1; //현재 페이지
     int totalPages = postPage.getTotalPages();
@@ -40,6 +50,8 @@ public String list(@PageableDefault(size = 10, sort = "id", direction = Sort.Dir
     model.addAttribute("nowPage", nowPage);
     model.addAttribute("startPage", startPage);
     model.addAttribute("endPage", endPage);
+    model.addAttribute("type", type);
+    model.addAttribute("keyword", keyword);
 
     return "list";
 }
