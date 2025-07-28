@@ -4,6 +4,8 @@ import com.example.board.domain.Post;
 import com.example.board.exception.PostNotFoundException;
 import com.example.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +19,13 @@ public class PostService {
     private final PostRepository postRepository;
 
 
-    public List<Post> findAll() {
-        return postRepository.findAll();
-    }
+//    public List<Post> findAll() {
+//        return postRepository.findAll();
+//    }
 
+    public Page<Post> findAll(Pageable pageable) {
+        return postRepository.findAll(pageable);
+    }
     public Post findById(Long id) {
         return postRepository.findById(id).orElseThrow(()->new PostNotFoundException("해당 게시글을 찾을 수 없습니다."));
     }

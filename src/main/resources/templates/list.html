@@ -7,16 +7,33 @@
 <body>
 <h1>게시글 목록</h1>
 <a href="/posts/new">글 작성하기</a>
+
 <ul>
-    <li th:each="post : ${posts}">
+    <li th:each="post : ${page.content}">
         <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">글 제목</a>
         <span>작성자: <span th:text="${post.author}">작성자</span></span>
         <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
-        <form th:action="@{'/posts/' + ${post.id}}" method="post" onsubmit="return confirm('삭제하시겠습니까?');">
-            <input type="hidden" name="_method" value="delete" />
-            <button type="submit">삭제</button>
-        </form>
     </li>
 </ul>
+<!-- 페이지 정보 -->
+<div>
+    <span>현재 페이지: <span th:text="${nowPage}">1</span> / <span th:text="${page.totalPages}">1</span></span>
+</div>
+
+<!-- 페이지 이동 버튼 -->
+<div>
+    <a th:if="${nowPage > 1}" th:href="@{/posts(page=${nowPage - 2})}">이전</a>
+
+    <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+        <a th:href="@{/posts(page=${i - 1})}"
+           th:text="${i}"
+           th:classappend="${i == nowPage} ? 'active' : ''">
+        </a>
+    </span>
+
+    <a th:if="${nowPage < page.totalPages}" th:href="@{/posts(page=${nowPage})}">다음</a>
+</div>
+
+
 </body>
 </html>
