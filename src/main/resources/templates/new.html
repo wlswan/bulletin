@@ -6,23 +6,26 @@
 </head>
 <body>
 <h1>글 작성하기</h1>
-<form action="#" th:action="@{/posts}" th:object="${post}" method="post">
+<form th:action="@{/posts}" th:object="${post}" method="post">
     <p>
         <label for="title">제목:</label><br />
-        <input type="text" id="title" name="title" />
+        <input type="text" th:field="*{title}" />
+        <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color:red"></span>
     </p>
     <p>
         <label for="content">내용:</label><br />
-        <textarea id="content" name="content" rows="5" cols="30"></textarea>
+        <textarea th:field="*{content}" rows="5" cols="30"></textarea>
+        <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" style="color:red"></span>
     </p>
     <p>
         <label for="author">작성자:</label><br />
-        <input type="text" id="author" name="author" />
+        <input type="text" th:field="*{author}" />
+        <span th:if="${#fields.hasErrors('author')}" th:errors="*{author}" style="color:red"></span>
     </p>
     <p>
         <button type="submit">등록</button>
-        <a href="/posts">취소</a>
     </p>
 </form>
+
 </body>
 </html>
