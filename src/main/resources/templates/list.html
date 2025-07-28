@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>게시글 목록</title>
+</head>
+<body>
+<h1>게시글 목록</h1>
+<a href="/posts/new">글 작성하기</a>
+<ul>
+    <li th:each="post : ${posts}">
+        <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">글 제목</a>
+        <span>작성자: <span th:text="${post.author}">작성자</span></span>
+        <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+        <form th:action="@{'/posts/' + ${post.id}}" method="post" onsubmit="return confirm('삭제하시겠습니까?');">
+            <input type="hidden" name="_method" value="delete" />
+            <button type="submit">삭제</button>
+        </form>
+    </li>
+</ul>
+</body>
+</html>
