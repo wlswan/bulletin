@@ -21,10 +21,12 @@
         <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">글 제목</a>
         <span>작성자: <span th:text="${post.author}">작성자</span></span>
         <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+        <span>조회수: <span th:text="${post.views}">0</span></span>
+
     </li>
 </ul>
 
-<!-- 페이지 정보 --><!-- 🔍 검색 폼 -->
+<!-- 🔍 검색 폼 -->
 <form th:action="@{/posts}" method="get">
     <select name="type">
         <option value="title" th:selected="${type == 'title'}">제목</option>

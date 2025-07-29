@@ -10,6 +10,8 @@
 <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
 <hr />
 <p th:text="${post.content}">글 내용</p>
+<p>조회수: <span th:text="${post.views}">0</span></p>
+
 <a href="/posts">목록으로</a>
 <a th:href="@{'/posts/' + ${post.id} + '/edit'}">수정</a>
 <form th:action="@{'/posts/' + ${post.id}}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">

@@ -26,7 +26,9 @@ public class PostController {
 //        return "list";
 //    }
 @GetMapping
-public String list(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+public String list(
+        @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
+        Pageable pageable
         , @RequestParam(required = false) String type
         , @RequestParam(required = false) String keyword
         ,Model model) {
@@ -60,7 +62,7 @@ public String list(@PageableDefault(size = 10, sort = "id", direction = Sort.Dir
 
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id , Model model) {
-        Post post = postService.findById(id);
+        Post post = postService.findByIdAndIncreaseViews(id);
         model.addAttribute("post",post);
         return "detail";
     }

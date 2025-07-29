@@ -31,6 +31,10 @@ public class Post {
 
     private LocalDateTime createdAt;
 
+    @Column(nullable = false) // 데이터베이스 계층 DB에 업데이트할 때 유효성 검증
+    @NotNull //애플리케이션 계층 dto에서 유효성 검증
+    private int views = 0;
+
     @PrePersist
     public void prePersist(){
         this.createdAt = LocalDateTime.now();
