@@ -1,6 +1,9 @@
 package com.example.board.controller;
 
+import com.example.board.domain.Comment;
 import com.example.board.domain.Post;
+import com.example.board.dto.CommentForm;
+import com.example.board.service.CommentService;
 import com.example.board.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +17,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/posts")
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final CommentService commentService;
 
 //    @GetMapping
 //    public String list(Model model) {
@@ -63,7 +69,10 @@ public String list(
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id , Model model) {
         Post post = postService.findByIdAndIncreaseViews(id);
+        List<Comment> comments = commentService.getCommentsByPostId(id);
         model.addAttribute("post",post);
+        model.addAttribute("comments", comments);
+        model.addAttribute("commentForm", new CommentForm());
         return "detail";
     }
 

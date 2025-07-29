@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,6 +31,9 @@ public class Post {
     @NotBlank(message = "작성자는 필수입니다.")
     private String author;
 
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
+    List<Comment> comments = new ArrayList<>();
+
     private LocalDateTime createdAt;
 
     @Column(nullable = false) // 데이터베이스 계층 DB에 업데이트할 때 유효성 검증
@@ -41,9 +46,6 @@ public class Post {
     }
 
     //대안으로 @CreatedDate가 있음
-
-
-
 
 
 }
