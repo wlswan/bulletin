@@ -67,6 +67,7 @@ public String list(
 
 
     @GetMapping("/{id}")
+    //쿼리 3번 나감 post 조회 , 조회수 업데이트  , comment 조회 나중에 바꿔보자
     public String detail(@PathVariable Long id , Model model) {
         Post post = postService.findByIdAndIncreaseViews(id);
         List<Comment> comments = commentService.getCommentsByPostId(id);

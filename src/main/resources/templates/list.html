@@ -4,51 +4,129 @@
     <meta charset="UTF-8" />
     <title>게시글 목록</title>
     <style>
-        .active {
-            font-weight: bold;
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9f9f9;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
             text-decoration: underline;
+        }
+
+        .post-item {
+            background-color: white;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .post-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .post-meta {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 0.3rem;
+        }
+
+        .search-box {
+            margin: 1.5rem 0;
+        }
+
+        .search-box input,
+        .search-box select {
+            padding: 0.4rem;
+            margin-right: 0.5rem;
+        }
+
+        .pagination a {
+            margin: 0 4px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .pagination a.active {
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .write-button {
+            float: right;
+            margin-top: -2rem;
+        }
+
+        .write-button a {
+            background-color: #007bff;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 5px;
+        }
+
+        .write-button a:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-<h1> <a th:href="@{'/posts'}" style="text-decoration: none;">게시글 목록</a></h1>
-<a href="/posts/new">글 작성하기</a>
+<h1><a th:href="@{/posts}">📃 게시글 목록</a></h1>
 
+<div class="write-button">
+    <a href="/posts/new">글 작성하기</a>
+</div>
 
 <!-- 게시글 목록 -->
-<ul>
-    <li th:each="post : ${page.content}">
-        <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">글 제목</a>
-        <span>작성자: <span th:text="${post.author}">작성자</span></span>
-        <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
-        <span>조회수: <span th:text="${post.views}">0</span></span>
-
-    </li>
-</ul>
+<div th:each="post : ${page.content}" class="post-item">
+    <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}" class="post-title">글 제목</a>
+    <div class="post-meta">
+        작성자: <span th:text="${post.author}">작성자</span> |
+        <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span> |
+        조회수: <span th:text="${post.views}">0</span>
+    </div>
+</div>
 
 <!-- 🔍 검색 폼 -->
-<form th:action="@{/posts}" method="get">
+<form th:action="@{/posts}" method="get" class="search-box">
     <select name="type">
         <option value="title" th:selected="${type == 'title'}">제목</option>
         <option value="content" th:selected="${type == 'content'}">내용</option>
         <option value="author" th:selected="${type == 'author'}">작성자</option>
     </select>
-    <input type="text" name="keyword" th:value="${keyword}" placeholder="검색어 입력"/>
+    <input type="text" name="keyword" th:value="${keyword}" placeholder="검색어 입력" />
     <button type="submit">검색</button>
 </form>
 
 <!-- 페이지 이동 버튼 -->
-<div>
-    <a th:if="${nowPage > 1}" th:href="@{/posts(page=${nowPage - 2}, type=${type}, keyword=${keyword})}">이전</a>
+<div class="pagination">
+    <a th:if="${nowPage > 1}"
+       th:href="@{/posts(page=${nowPage - 2}, type=${type}, keyword=${keyword})}">이전</a>
 
     <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
-        <a th:href="@{/posts(page=${i - 1}, type=${type}, keyword=${keyword})}"
-           th:text="${i}"
-           th:classappend="${i == nowPage} ? 'active' : ''">
-        </a>
-    </span>
+            <a th:href="@{/posts(page=${i - 1}, type=${type}, keyword=${keyword})}"
+               th:text="${i}"
+               th:classappend="${i == nowPage} ? 'active' : ''">
+            </a>
+        </span>
 
-    <a th:if="${nowPage < page.totalPages}" th:href="@{/posts(page=${nowPage}, type=${type}, keyword=${keyword})}">다음</a>
+    <a th:if="${nowPage < page.totalPages}"
+       th:href="@{/posts(page=${nowPage}, type=${type}, keyword=${keyword})}">다음</a>
 </div>
 </body>
 </html>
