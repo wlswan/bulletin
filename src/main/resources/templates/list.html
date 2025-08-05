@@ -69,8 +69,8 @@
         }
 
         .write-button {
-            float: right;
-            margin-top: -2rem;
+            text-align: right;
+            margin-bottom: 1rem;
         }
 
         .write-button a {
@@ -88,7 +88,8 @@
 <body>
 <h1><a th:href="@{/posts}">📃 게시글 목록</a></h1>
 
-<div class="write-button">
+<!-- 수정 -->
+<div class="write-button" th:if="${#authentication != null and #authentication.authenticated}">
     <a href="/posts/new">글 작성하기</a>
 </div>
 
@@ -96,7 +97,8 @@
 <div th:each="post : ${page.content}" class="post-item">
     <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}" class="post-title">글 제목</a>
     <div class="post-meta">
-        작성자: <span th:text="${post.author}">작성자</span> |
+        작성자:
+        <span th:text="${post.user != null ? post.user.email : '알 수 없음'}">작성자</span> |
         <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span> |
         조회수: <span th:text="${post.views}">0</span>
     </div>
@@ -119,11 +121,11 @@
        th:href="@{/posts(page=${nowPage - 2}, type=${type}, keyword=${keyword})}">이전</a>
 
     <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
-            <a th:href="@{/posts(page=${i - 1}, type=${type}, keyword=${keyword})}"
-               th:text="${i}"
-               th:classappend="${i == nowPage} ? 'active' : ''">
-            </a>
-        </span>
+        <a th:href="@{/posts(page=${i - 1}, type=${type}, keyword=${keyword})}"
+           th:text="${i}"
+           th:classappend="${i == nowPage} ? 'active' : ''">
+        </a>
+    </span>
 
     <a th:if="${nowPage < page.totalPages}"
        th:href="@{/posts(page=${nowPage}, type=${type}, keyword=${keyword})}">다음</a>

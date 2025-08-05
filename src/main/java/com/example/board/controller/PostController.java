@@ -3,6 +3,9 @@ package com.example.board.controller;
 import com.example.board.domain.Comment;
 import com.example.board.domain.Post;
 import com.example.board.dto.CommentForm;
+import com.example.board.dto.PostDto;
+import com.example.board.security.User;
+import com.example.board.security.details.CustomUserDetails;
 import com.example.board.service.CommentService;
 import com.example.board.service.PostService;
 import jakarta.validation.Valid;
@@ -12,10 +15,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -26,11 +33,6 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
 
-//    @GetMapping
-//    public String list(Model model) {
-//        model.addAttribute("posts",postService.findAll());
-//        return "list";
-//    }
 @GetMapping
 public String list(
         @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
@@ -39,6 +41,10 @@ public String list(
         , @RequestParam(required = false) String keyword
         ,Model model) {
     Page<Post> postPage;
+
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    System.out.println("Authentication: " + auth);
+    System.out.println("Authenticated? " + (auth != null && auth.isAuthenticated()));
 
     if(type != null && keyword !=null && !keyword.isEmpty()) {
         postPage = postService.search(type,keyword,pageable);
@@ -79,35 +85,57 @@ public String list(
 
     @GetMapping("/new")
     public String createForm(Model model){
-        model.addAttribute("post",new Post());
+        model.addAttribute("postDto",new PostDto());
         return "new";
     }
 
     @PostMapping()
-    public String create(@Valid @ModelAttribute Post post, BindingResult result){
+    public String create(@Valid @ModelAttribute PostDto postdto,
+                         BindingResult result,
+                         @AuthenticationPrincipal CustomUserDetails customUserDetails){
         if(result.hasErrors()) {
             return "new";
         }
-        postService.create(post);
+        postService.create(postdto,customUserDetails.getUser());
         return "redirect:/posts";
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id){
-        postService.delete(id);
+    public String delete(@PathVariable Long id,
+                         @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        postService.delete(id,customUserDetails.getUser());
         return "redirect:/posts";
     }
 
     @GetMapping("/{id}/edit")
-    public String updateForm(@PathVariable Long id, Model model) {
+    public String updateForm(@PathVariable Long id,
+                             @AuthenticationPrincipal CustomUserDetails customUserDetails ,
+                             Model model) {
         Post post = postService.findById(id);
-        model.addAttribute("post",post);
+        User user = customUserDetails.getUser();
+        if(!postService.isWriterOrAdmin(user,post)){
+            return "redirect:/access-denied";
+        }
+        PostDto postDto = new PostDto();
+        postDto.setContent(post.getContent());
+        postDto.setTitle(post.getTitle());
+        model.addAttribute("postDto",postDto);
+        model.addAttribute("postId", id);
         return "edit";
     }
 
     @PutMapping("/{id}")
-    public String update(@PathVariable Long id, @ModelAttribute Post updatedPost) {
-        postService.update(id,updatedPost);
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute PostDto postDto,
+                         BindingResult bindingResult,
+                         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                         Model model) {
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("postDto", postDto);
+            model.addAttribute("postId", id);
+            return "edit";
+        }
+        postService.update(id,postDto,customUserDetails.getUser());
         return "redirect:/posts/{id}";
     }
 }
