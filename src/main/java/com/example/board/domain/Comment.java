@@ -1,5 +1,6 @@
 package com.example.board.domain;
 
+import com.example.board.security.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,10 @@ public class Comment {
     private String content;
 
     private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @PrePersist
     public void prePersist(){

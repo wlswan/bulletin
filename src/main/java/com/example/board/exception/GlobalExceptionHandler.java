@@ -15,9 +15,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<String> handleCommentNotFound(CommentNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
     //뷰 렌더링 타임리프로
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public String handleEmailAlreadyExists(EmailAlreadyExistsException e, Model model) {
+
         model.addAttribute("errorMessage", e.getMessage());
         return "register";
     }

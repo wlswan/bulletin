@@ -1,5 +1,6 @@
 package com.example.board.security;
 
+import com.example.board.domain.Comment;
 import com.example.board.domain.Post;
 import com.example.board.security.details.Role;
 import jakarta.persistence.*;
@@ -27,4 +28,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 }
