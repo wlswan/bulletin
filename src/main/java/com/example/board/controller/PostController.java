@@ -8,6 +8,7 @@ import com.example.board.security.User;
 import com.example.board.security.details.CustomUserDetails;
 import com.example.board.service.CommentService;
 import com.example.board.service.PostService;
+import com.example.board.service.PostViewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
     private final CommentService commentService;
+    private final PostViewService postViewService;
 
 @GetMapping
 public String list(
@@ -73,9 +75,9 @@ public String list(
 
 
     @GetMapping("/{id}")
-    //쿼리 3번 나감 post 조회 , 조회수 업데이트  , comment 조회 나중에 바꿔보자
     public String detail(@PathVariable Long id , Model model) {
-        Post post = postService.findByIdAndIncreaseViews(id);
+        Post post = postService.findById(id);
+        postViewService.increaseViewCount(id);
         List<Comment> comments = commentService.getCommentsByPostId(id);
         model.addAttribute("post",post);
         model.addAttribute("comments", comments);
