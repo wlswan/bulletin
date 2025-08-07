@@ -78,6 +78,9 @@ public String list(
     public String detail(@PathVariable Long id , Model model) {
         Post post = postService.findPostWithComments(id);
         postViewService.increaseViewCount(id);
+
+        int cachedCount = postViewService.getCachedCount(id);
+        post.setViews(post.getViews()+cachedCount);
         model.addAttribute("post",post);
         model.addAttribute("commentForm", new CommentForm());
         return "detail";
