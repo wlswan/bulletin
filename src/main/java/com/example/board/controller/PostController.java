@@ -44,10 +44,6 @@ public String list(
         ,Model model) {
     Page<Post> postPage;
 
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    System.out.println("Authentication: " + auth);
-    System.out.println("Authenticated? " + (auth != null && auth.isAuthenticated()));
-
     if(type != null && keyword !=null && !keyword.isEmpty()) {
         postPage = postService.search(type,keyword,pageable);
     }
