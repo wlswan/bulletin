@@ -76,11 +76,9 @@ public String list(
 
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id , Model model) {
-        Post post = postService.findById(id);
+        Post post = postService.findPostWithComments(id);
         postViewService.increaseViewCount(id);
-        List<Comment> comments = commentService.getCommentsByPostId(id);
         model.addAttribute("post",post);
-        model.addAttribute("comments", comments);
         model.addAttribute("commentForm", new CommentForm());
         return "detail";
     }

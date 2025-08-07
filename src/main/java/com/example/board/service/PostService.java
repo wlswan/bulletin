@@ -27,6 +27,10 @@ public class PostService {
         return postRepository.findById(id).orElseThrow(()->new PostNotFoundException("해당 게시글을 찾을 수 없습니다."));
     }
 
+    public Post findPostWithComments(Long id) {
+        return postRepository.findPostWithComments(id).orElseThrow(() -> new PostNotFoundException("해당 게시글을 찾을 수 없습니다."));
+    }
+
     public Post create(@Valid PostDto postdto, User user) {
         Post post = new Post();
         post.setUser(user);

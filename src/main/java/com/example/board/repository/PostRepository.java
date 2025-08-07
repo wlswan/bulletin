@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post,Long> {
 
@@ -21,4 +23,12 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Transactional
     @Query("UPDATE Post p SET p.views = p.views + :count WHERE p.id = :postId")
     void increaseViewCount(@Param("postId")Long postId, @Param("count") int count);
+
+
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "JOIN FETCH p.comments c " +
+            "JOIN FETCH c.user " +
+            "WHERE p.id = :id")
+    Optional<Post> findPostWithComments(@Param("id") Long id);
+
 }

@@ -130,8 +130,8 @@
         <p>댓글이 아직 없습니다.</p>
     </div>
 
-    <ul class="comments-list" th:if="${!#lists.isEmpty(comments)}">
-        <li th:each="comment : ${comments}">
+    <ul class="comments-list" th:each="comment : ${post.comments}">
+        <li>
             <p><strong th:text="${comment.user.email}">작성자</strong></p>
             <p th:text="${comment.content}">댓글 내용</p>
             <time class="comment-time" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">작성 시간</time>
