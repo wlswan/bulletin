@@ -4,7 +4,7 @@ import com.example.board.domain.Post;
 import com.example.board.dto.CommentForm;
 import com.example.board.dto.PostDto;
 import com.example.board.security.User;
-import com.example.board.security.auth.CustomUserDetails;
+import com.example.board.security.auth.PrincipalDetails;
 import com.example.board.service.CommentService;
 import com.example.board.service.PostService;
 import com.example.board.service.PostViewService;
@@ -84,27 +84,27 @@ public String list(
     @PostMapping()
     public String create(@Valid @ModelAttribute PostDto postdto,
                          BindingResult result,
-                         @AuthenticationPrincipal CustomUserDetails customUserDetails){
+                         @AuthenticationPrincipal PrincipalDetails PrincipalDetails){
         if(result.hasErrors()) {
             return "new";
         }
-        postService.create(postdto,customUserDetails.getUser());
+        postService.create(postdto,PrincipalDetails.getUser());
         return "redirect:/posts";
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id,
-                         @AuthenticationPrincipal CustomUserDetails customUserDetails){
-        postService.delete(id,customUserDetails.getUser());
+                         @AuthenticationPrincipal PrincipalDetails PrincipalDetails){
+        postService.delete(id,PrincipalDetails.getUser());
         return "redirect:/posts";
     }
 
     @GetMapping("/{id}/edit")
     public String updateForm(@PathVariable Long id,
-                             @AuthenticationPrincipal CustomUserDetails customUserDetails ,
+                             @AuthenticationPrincipal PrincipalDetails PrincipalDetails ,
                              Model model) {
         Post post = postService.findById(id);
-        User user = customUserDetails.getUser();
+        User user = PrincipalDetails.getUser();
         if(!postService.isWriterOrAdmin(user,post)){
             return "redirect:/access-denied";
         }
@@ -120,14 +120,14 @@ public String list(
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute PostDto postDto,
                          BindingResult bindingResult,
-                         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                         @AuthenticationPrincipal PrincipalDetails PrincipalDetails,
                          Model model) {
         if(bindingResult.hasErrors()) {
             model.addAttribute("postDto", postDto);
             model.addAttribute("postId", id);
             return "edit";
         }
-        postService.update(id,postDto,customUserDetails.getUser());
+        postService.update(id,postDto,PrincipalDetails.getUser());
         return "redirect:/posts/{id}";
     }
 }
