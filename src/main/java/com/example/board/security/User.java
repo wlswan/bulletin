@@ -2,7 +2,7 @@ package com.example.board.security;
 
 import com.example.board.domain.Comment;
 import com.example.board.domain.Post;
-import com.example.board.security.details.Role;
+import com.example.board.security.auth.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,8 +23,12 @@ public class User {
     private String email;
     private String password;
 
+    private String provider;
+    private String providerId;
+
     @Enumerated(EnumType.STRING)
     private Role role;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();

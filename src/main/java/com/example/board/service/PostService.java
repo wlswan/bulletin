@@ -5,7 +5,7 @@ import com.example.board.dto.PostDto;
 import com.example.board.exception.PostNotFoundException;
 import com.example.board.repository.PostRepository;
 import com.example.board.security.User;
-import com.example.board.security.details.Role;
+import com.example.board.security.auth.Role;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

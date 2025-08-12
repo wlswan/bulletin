@@ -1,4 +1,4 @@
-package com.example.board.security.details;
+package com.example.board.security.auth;
 
 import org.springframework.security.core.GrantedAuthority;
 

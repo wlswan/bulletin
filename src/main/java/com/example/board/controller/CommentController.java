@@ -3,12 +3,11 @@ package com.example.board.controller;
 import com.example.board.domain.Comment;
 import com.example.board.dto.CommentForm;
 import com.example.board.security.User;
-import com.example.board.security.details.CustomUserDetails;
+import com.example.board.security.auth.CustomUserDetails;
 import com.example.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 

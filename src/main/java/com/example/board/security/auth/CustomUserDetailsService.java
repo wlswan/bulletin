@@ -1,4 +1,4 @@
-package com.example.board.security.details;
+package com.example.board.security.auth;
 
 import com.example.board.security.UserRepository;
 import lombok.RequiredArgsConstructor;

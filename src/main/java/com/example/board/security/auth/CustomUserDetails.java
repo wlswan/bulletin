@@ -1,4 +1,4 @@
-package com.example.board.security.details;
+package com.example.board.security.auth;
 
 import com.example.board.security.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,7 +20,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(Role.ROLE_USER);
+        return List.of(()->user.getRole().name());
     }
 
     @Override

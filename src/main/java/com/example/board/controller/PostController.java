@@ -1,31 +1,24 @@
 package com.example.board.controller;
 
-import com.example.board.domain.Comment;
 import com.example.board.domain.Post;
 import com.example.board.dto.CommentForm;
 import com.example.board.dto.PostDto;
 import com.example.board.security.User;
-import com.example.board.security.details.CustomUserDetails;
+import com.example.board.security.auth.CustomUserDetails;
 import com.example.board.service.CommentService;
 import com.example.board.service.PostService;
 import com.example.board.service.PostViewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/posts")

@@ -8,7 +8,7 @@ import com.example.board.exception.PostNotFoundException;
 import com.example.board.repository.CommentRepository;
 import com.example.board.repository.PostRepository;
 import com.example.board.security.User;
-import com.example.board.security.details.Role;
+import com.example.board.security.auth.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;

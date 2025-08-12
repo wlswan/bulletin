@@ -1,10 +1,8 @@
 package com.example.board.security;
 
 import com.example.board.exception.EmailAlreadyExistsException;
-import com.example.board.security.details.Role;
-import jakarta.validation.Valid;
+import com.example.board.security.auth.Role;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +21,9 @@ public class UserService {
         User user = new User();
         user.setEmail(userRegisterDto.getEmail());
         user.setPassword(passwordEncoder.encode(userRegisterDto.getPassword()));
+        user.setProvider(null);
+        user.setProviderId(null);
         user.setRole(Role.ROLE_USER);
-        userRepository.save(user);
-
-        return user;
+        return userRepository.save(user);
     }
 }
