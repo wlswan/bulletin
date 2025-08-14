@@ -68,27 +68,62 @@
             text-decoration: underline;
         }
 
+        /* 최상단 버튼: 내 프로필 / 로그아웃 */
+        .top-buttons {
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+
+        .top-buttons a {
+            background-color: #007bff;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 5px;
+            margin-left: 0.5rem;
+            display: inline-block;
+        }
+
+        .top-buttons a.logout {
+            background-color: #dc3545;
+        }
+
+        .top-buttons a:hover {
+            opacity: 0.85;
+        }
+
+        .top-buttons a.logout:hover {
+            opacity: 0.85;
+        }
+
+        /* 글 작성 버튼 */
         .write-button {
             text-align: right;
             margin-bottom: 1rem;
         }
 
         .write-button a {
-            background-color: #007bff;
+            background-color: #28a745;
             color: white;
             padding: 0.4rem 0.8rem;
             border-radius: 5px;
         }
 
         .write-button a:hover {
-            background-color: #0056b3;
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
+
+<!-- 최상단 버튼: 내 프로필 / 로그아웃 -->
+<div class="top-buttons" th:if="${#authentication != null and #authentication.authenticated}">
+    <a href="/myProfile">내 프로필</a>
+    <a th:href="@{/logout}" class="logout">로그아웃</a>
+</div>
+
 <h1><a th:href="@{/posts}">📃 게시글 목록</a></h1>
 
-<!-- 수정 -->
+<!-- 글 작성 버튼: 게시글 목록 바로 위 -->
 <div class="write-button" th:if="${#authentication != null and #authentication.authenticated}">
     <a href="/posts/new">글 작성하기</a>
 </div>
@@ -104,7 +139,7 @@
     </div>
 </div>
 
-<!-- 🔍 검색 폼 -->
+<!-- 검색 폼 -->
 <form th:action="@{/posts}" method="get" class="search-box">
     <select name="type">
         <option value="title" th:selected="${type == 'title'}">제목</option>

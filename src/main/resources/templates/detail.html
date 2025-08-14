@@ -4,93 +4,34 @@
     <meta charset="UTF-8" />
     <title th:text="${post.title}">글 상세</title>
     <style>
-        body {
-            max-width: 700px;
-            margin: 2rem auto;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #fafafa;
-            padding: 0 1rem;
-        }
-        h1, h2, h3 {
-            color: #222;
-        }
-        a {
-            color: #0066cc;
-            text-decoration: none;
-            margin-right: 1rem;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        hr {
-            border: none;
-            border-top: 1px solid #ddd;
-            margin: 1.5rem 0;
-        }
-        .post-meta {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 1rem;
-        }
-        .post-content {
-            white-space: pre-line;
-            margin-bottom: 1.5rem;
-        }
-        form.delete-form {
-            display: inline-block;
-            margin-left: 1rem;
-        }
-        button {
-            cursor: pointer;
-            background-color: #0066cc;
-            border: none;
-            color: white;
-            padding: 0.4rem 1rem;
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: background-color 0.2s ease-in-out;
-        }
-        button:hover {
-            background-color: #004999;
-        }
-        .comments-list {
-            list-style: none;
-            padding-left: 0;
-        }
-        .comments-list li {
-            background: white;
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .comment-time {
-            font-size: 0.8rem;
-            color: #999;
-            margin-top: 0.5rem;
-            display: block;
-        }
-        form.comment-form textarea {
-            width: 100%;
-            resize: vertical;
-            font-size: 1rem;
-            padding: 0.5rem;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            margin-bottom: 0.5rem;
-            min-height: 80px;
-            font-family: inherit;
-        }
-        form.comment-form button {
-            display: block;
-            width: 100%;
-            font-weight: bold;
-        }
+        body { max-width: 700px; margin: 2rem auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #fafafa; padding: 0 1rem; }
+        h1, h2, h3 { color: #222; }
+        a { color: #0066cc; text-decoration: none; margin-right: 1rem; }
+        a:hover { text-decoration: underline; }
+        hr { border: none; border-top: 1px solid #ddd; margin: 1.5rem 0; }
+        .post-meta { font-size: 0.9rem; color: #666; margin-bottom: 1rem; }
+        .post-content { white-space: pre-line; margin-bottom: 1.5rem; }
+        form.delete-form { display: inline-block; margin-left: 1rem; }
+        button { cursor: pointer; background-color: #0066cc; border: none; color: white; padding: 0.4rem 1rem; border-radius: 4px; font-size: 1rem; transition: background-color 0.2s ease-in-out; }
+        button:hover { background-color: #004999; }
+        .comments-list { list-style: none; padding-left: 0; }
+        .comments-list li { background: white; padding: 1rem; border-radius: 5px; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .comment-time { font-size: 0.8rem; color: #999; margin-top: 0.5rem; display: block; }
+        form.comment-form textarea { width: 100%; resize: vertical; font-size: 1rem; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc; margin-bottom: 0.5rem; min-height: 80px; font-family: inherit; }
+        form.comment-form button { display: block; width: 100%; font-weight: bold; }
+
+        .top-buttons { text-align: right; margin-bottom: 1rem; }
+        .top-buttons a { background-color: #007bff; color: white; padding: 0.4rem 0.8rem; border-radius: 5px; margin-left: 0.5rem; display: inline-block; }
+        .top-buttons a.logout { background-color: #dc3545; }
     </style>
 </head>
 <body>
+
+<!-- 최상단 버튼: 내 프로필 / 로그아웃 -->
+<div class="top-buttons" th:if="${#authentication != null and #authentication.authenticated}">
+    <a href="/myProfile">내 프로필</a>
+    <a th:href="@{/logout}" class="logout">로그아웃</a>
+</div>
 
 <article>
     <header>
@@ -102,19 +43,13 @@
         </div>
     </header>
 
-    <section class="post-content" th:text="${post.content}">
-        글 내용
-    </section>
+    <section class="post-content" th:text="${post.content}">글 내용</section>
 
     <nav>
         <a href="/posts">목록으로</a>
-
-        <!-- 작성자 본인 또는 관리자일 때만 수정/삭제 버튼 노출 -->
         <span th:if="${#authentication.principal?.user?.email == post.user?.email or #authorization.expression('hasRole(''ADMIN'')')}">
             <a th:href="@{'/posts/' + ${post.id} + '/edit'}">수정</a>
-
-            <form th:action="@{'/posts/' + ${post.id}}" method="post" class="delete-form"
-                  onsubmit="return confirm('정말 삭제하시겠습니까?');">
+            <form th:action="@{'/posts/' + ${post.id}}" method="post" class="delete-form" onsubmit="return confirm('정말 삭제하시겠습니까?');">
                 <input type="hidden" name="_method" value="delete" />
                 <button type="submit">삭제</button>
             </form>
@@ -146,7 +81,6 @@
         </li>
     </ul>
 </section>
-
 
 <section th:if="${#authorization.expression('isAuthenticated()')}">
     <h3>댓글 작성</h3>

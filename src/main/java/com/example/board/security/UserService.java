@@ -3,6 +3,7 @@ package com.example.board.security;
 import com.example.board.exception.EmailAlreadyExistsException;
 import com.example.board.security.auth.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,5 +26,9 @@ public class UserService {
         user.setProviderId(null);
         user.setRole(Role.ROLE_USER);
         return userRepository.save(user);
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
     }
 }
