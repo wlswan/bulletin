@@ -21,8 +21,8 @@ public class CommentController {
     public String saveComment(@ModelAttribute CommentForm commentForm,
                               RedirectAttributes redirectAttributes,
                               @AuthenticationPrincipal PrincipalDetails PrincipalDetails) {
-        User user = PrincipalDetails.getUser();
-        commentService.saveComment(commentForm,user);
+        Long userId = PrincipalDetails.getUserId();
+        commentService.saveComment(commentForm,userId);
         redirectAttributes.addAttribute("id", commentForm.getPostId());
         return  "redirect:/posts/{id}";
     }
@@ -32,7 +32,7 @@ public class CommentController {
                                 @AuthenticationPrincipal PrincipalDetails PrincipalDetails,
                                 RedirectAttributes redirectAttributes) {
         Comment comment = commentService.findById(id);
-        commentService.delete(id, PrincipalDetails.getUser());
+        commentService.delete(id, PrincipalDetails.getUserId());
         redirectAttributes.addAttribute("id",comment.getPost().getId());
 
         return "redirect:/posts/{id}";

@@ -3,29 +3,95 @@
 <head>
     <meta charset="UTF-8" />
     <title>게시글 수정</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9f9f9;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        form {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 0.3rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .cancel-link {
+            margin-left: 1rem;
+            color: #555;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .cancel-link:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
 <body>
-<h1>게시글 수정</h1>
+<h1>✏ 게시글 수정</h1>
 
 <form th:action="@{'/posts/' + ${postId}}" method="post" th:object="${postDto}">
     <input type="hidden" name="_method" value="put"/>
 
     <p>
-        <label for="title">제목:</label><br/>
-        <input type="text" th:field="*{title}" id="title"/>
-        <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color:red"></span>
+        <label for="title">제목</label><br/>
+        <input type="text" th:field="*{title}" id="title" placeholder="제목을 입력하세요"/>
+        <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error"></span>
     </p>
 
     <p>
-        <label for="content">내용:</label><br/>
-        <textarea th:field="*{content}" rows="5" cols="30" id="content"></textarea>
-        <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" style="color:red"></span>
+        <label for="content">내용</label><br/>
+        <textarea th:field="*{content}" rows="8" id="content" placeholder="내용을 입력하세요"></textarea>
+        <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="error"></span>
     </p>
 
     <p>
         <button type="submit">수정</button>
-        <a th:href="@{'/posts/' + ${postId}}">취소</a>
+        <a th:href="@{'/posts/' + ${postId}}" class="cancel-link">취소</a>
     </p>
 </form>
+
 </body>
 </html>

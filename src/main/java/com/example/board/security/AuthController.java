@@ -50,7 +50,7 @@ public class AuthController {
                             Model model) {
         // AuthenticationPrincipal 여기에 user객체 자체를 넣으면 안됨 세션유지 용량이 커짐 식별자 정도만 넣어야함
         // 나중에 고쳐보자 user객체를 받아서 최소한의 정보를 필드로 저장하고 사용할수있게
-        Long id = principalDetails.getUser().getId();
+        Long id = principalDetails.getUserId();
         User user = userService.findById(id);
         MyProfileDto myProfileDto = new MyProfileDto(user.getEmail(), user.getRole());
         model.addAttribute("myProfileDto", myProfileDto);

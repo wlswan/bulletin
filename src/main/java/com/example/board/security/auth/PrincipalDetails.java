@@ -1,5 +1,6 @@
 package com.example.board.security.auth;
 
+import com.example.board.dto.UserDto;
 import com.example.board.security.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,22 +10,39 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+//세션에는 엔티티를 넣지 말자 다 고쳐
 public class PrincipalDetails implements OAuth2User, UserDetails {
-    private final User user;
-    private final Map<String,Object> attributes;
+    private final Long userId;
+    private final String email;
+    private final Role role;
+    private final String password;    private final Map<String,Object> attributes;
 
-    public PrincipalDetails(User user) {
-        this.user = user;
+    public PrincipalDetails(UserDto userDto) {
+        this.userId = userDto.getId();
+        this.email = userDto.getEmail();
+        this.role = userDto.getRole();
+        this.password = userDto.getPassword();
         attributes = null;
     }
 
-    public PrincipalDetails(User user, Map<String, Object> attributes) {
-        this.user = user;
+    public PrincipalDetails(UserDto userDto, Map<String, Object> attributes) {
+        this.userId = userDto.getId();
+        this.email = userDto.getEmail();
+        this.role = userDto.getRole();
+        this.password = userDto.getPassword();
         this.attributes = attributes;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override
@@ -34,17 +52,17 @@ public class PrincipalDetails implements OAuth2User, UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(()->user.getRole().name());
+        return List.of(role);
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return email;
     }
 
     @Override

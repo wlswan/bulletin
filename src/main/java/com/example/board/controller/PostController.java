@@ -88,14 +88,14 @@ public String list(
         if(result.hasErrors()) {
             return "new";
         }
-        postService.create(postdto,PrincipalDetails.getUser());
+        postService.create(postdto,PrincipalDetails.getUserId());
         return "redirect:/posts";
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id,
                          @AuthenticationPrincipal PrincipalDetails PrincipalDetails){
-        postService.delete(id,PrincipalDetails.getUser());
+        postService.delete(id,PrincipalDetails.getUserId());
         return "redirect:/posts";
     }
 
@@ -104,8 +104,8 @@ public String list(
                              @AuthenticationPrincipal PrincipalDetails PrincipalDetails ,
                              Model model) {
         Post post = postService.findById(id);
-        User user = PrincipalDetails.getUser();
-        if(!postService.isWriterOrAdmin(user,post)){
+        Long userId = PrincipalDetails.getUserId();
+        if(!postService.isWriterOrAdmin(userId,post)){
             return "redirect:/access-denied";
         }
         PostDto postDto = new PostDto();
@@ -127,7 +127,7 @@ public String list(
             model.addAttribute("postId", id);
             return "edit";
         }
-        postService.update(id,postDto,PrincipalDetails.getUser());
+        postService.update(id,postDto,PrincipalDetails.getUserId());
         return "redirect:/posts/{id}";
     }
 }

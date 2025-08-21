@@ -1,5 +1,6 @@
 package com.example.board.security.auth.oauth;
 
+import com.example.board.dto.UserDto;
 import com.example.board.security.User;
 import com.example.board.security.UserRepository;
 import com.example.board.security.auth.PrincipalDetails;
@@ -48,6 +49,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             newUser.setRole(Role.ROLE_USER);
             return userRepository.save(newUser);
         });
-        return new PrincipalDetails(user, oAuth2User.getAttributes());
+        UserDto userDto = UserDto.fromEntity(user);
+        return new PrincipalDetails(userDto, oAuth2User.getAttributes());
     }
 }

@@ -47,7 +47,7 @@
 
     <nav>
         <a href="/posts">목록으로</a>
-        <span th:if="${#authentication.principal?.user?.email == post.user?.email or #authorization.expression('hasRole(''ADMIN'')')}">
+        <span th:if="${#authentication.principal?.email == post.user.email or #authorization.expression('hasRole(''ADMIN'')')}">
             <a th:href="@{'/posts/' + ${post.id} + '/edit'}">수정</a>
             <form th:action="@{'/posts/' + ${post.id}}" method="post" class="delete-form" onsubmit="return confirm('정말 삭제하시겠습니까?');">
                 <input type="hidden" name="_method" value="delete" />
@@ -71,7 +71,7 @@
             <p th:text="${comment.content}">댓글 내용</p>
             <time class="comment-time" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">작성 시간</time>
 
-            <form th:if="${#authentication.principal?.user?.email == comment.user.email}"
+            <form th:if="${#authentication.principal?.email == comment.user.email}"
                   th:action="@{'/comments/' + ${comment.id}}" method="post"
                   onsubmit="return confirm('이 댓글을 삭제하시겠습니까?');"
                   class="delete-form">

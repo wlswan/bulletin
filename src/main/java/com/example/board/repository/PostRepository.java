@@ -29,7 +29,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
             "LEFT JOIN FETCH p.comments c " +
             "LEFT JOIN FETCH c.user " +
             "WHERE p.id = :id")
-    //join fetch는 inner join으로 작동해서 댓글 없으면 안 보일수있음
+        //join fetch는 inner join으로 작동해서 댓글 없으면 안 보일수있음
     Optional<Post> findPostWithComments(@Param("id") Long id);
 
 }

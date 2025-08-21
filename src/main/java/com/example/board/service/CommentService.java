@@ -8,9 +8,11 @@ import com.example.board.exception.PostNotFoundException;
 import com.example.board.repository.CommentRepository;
 import com.example.board.repository.PostRepository;
 import com.example.board.security.User;
+import com.example.board.security.UserRepository;
 import com.example.board.security.auth.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +22,17 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public void saveComment(CommentForm commentForm, User user) {
+
+    public Comment findById(Long id) {
+        return commentRepository.findById(id).orElseThrow(() -> new CommentNotFoundException("해당 댓글이 존재하지 않습니다."));
+
+    }
+
+    public void saveComment(CommentForm commentForm, Long userId) {
         Post post = postRepository.findById(commentForm.getPostId()).orElseThrow(() -> new PostNotFoundException("게시글이 존재하지 않습니다."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다."));
         Comment comment = new Comment();
         comment.setPost(post);
         comment.setUser(user);
@@ -36,11 +46,11 @@ public class CommentService {
         return commentRepository.findByPostIdOrderByCreatedAtAsc(postId);
     }
 
-    public void delete(Long id, User user) {
+    public void delete(Long id, Long userId) {
         Comment comment = commentRepository.findById(id).orElseThrow(
                 () -> new CommentNotFoundException("해당 댓글이 존재하지 않습니다."));
 
-        if(isWriterOrAdmin(user,comment)) {
+        if(isWriterOrAdmin(userId,comment)) {
             commentRepository.delete(comment);
         }
         else {
@@ -50,12 +60,9 @@ public class CommentService {
 
     }
 
-    public boolean isWriterOrAdmin(User user, Comment comment) {
+    public boolean isWriterOrAdmin(Long userId, Comment comment) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다."));
         return user.getRole() == Role.ROLE_ADMIN || comment.getUser().getId().equals(user.getId());
     }
 
-    public Comment findById(Long id) {
-        return commentRepository.findById(id).orElseThrow(() -> new CommentNotFoundException("해당 댓글이 존재하지 않습니다."));
-
-    }
 }

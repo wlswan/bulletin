@@ -3,46 +3,154 @@
 <head>
     <meta charset="UTF-8" />
     <title>로그인</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 360px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        form div {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .social-login {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .social-login a {
+            display: inline-block;
+            margin: 5px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .kakao {
+            background: #F7E600;
+            color: #000;
+        }
+
+        .google {
+            background: #4285F4;
+            color: #fff;
+        }
+
+        .extra-links {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .extra-links a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .extra-links a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .message.error {
+            color: red;
+        }
+
+        .message.success {
+            color: green;
+        }
+    </style>
 </head>
 <body>
-<h2>로그인</h2>
 
-<form th:action="@{/login}" method="post">
-    <div>
-        <label for="username">이메일:</label>
-        <input type="text" id="username" name="username" placeholder="이메일 입력" required />
+<div class="login-container">
+    <h2>🔐 로그인</h2>
+
+    <form th:action="@{/login}" method="post">
+        <div>
+            <label for="username">이메일</label>
+            <input type="text" id="username" name="username" placeholder="이메일 입력" required />
+        </div>
+
+        <div>
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" name="password" placeholder="비밀번호 입력" required />
+        </div>
+
+        <button type="submit">로그인</button>
+    </form>
+
+    <!-- 소셜 로그인 -->
+    <div class="social-login">
+        <h3>소셜 로그인</h3>
+        <a href="/oauth2/authorization/kakao" class="kakao">카카오톡 로그인</a>
+        <a href="/oauth2/authorization/google" class="google">구글 로그인</a>
     </div>
 
-    <div>
-        <label for="password">비밀번호:</label>
-        <input type="password" id="password" name="password" placeholder="비밀번호 입력" required />
+    <!-- 회원가입 링크 -->
+    <div class="extra-links">
+        <p>아직 회원이 아니신가요? <a th:href="@{/register}">회원가입</a></p>
     </div>
 
-    <button type="submit">로그인</button>
-</form>
-
-<div>
-    <h3>소셜 로그인</h3>
-    <a href="/oauth2/authorization/kakao" style="display:inline-block; margin-right:10px; padding:8px 12px; background:#F7E600; color:#000; text-decoration:none; border-radius:4px;">
-        카카오톡 로그인
-    </a>
-    <a href="/oauth2/authorization/google" style="display:inline-block; padding:8px 12px; background:#4285F4; color:#fff; text-decoration:none; border-radius:4px;">
-        구글 로그인
-    </a>
-</div>
-
-<p>
-    아직 회원이 아니신가요? <a th:href="@{/register}">회원가입</a>
-</p>
-
-<!-- 로그인 실패 시 보여줄 메시지 -->
-<div th:if="${param.error}">
-    <p style="color: red;">로그인 실패: 아이디 또는 비밀번호를 확인하세요.</p>
-</div>
-
-<!-- 로그아웃 성공 메시지 -->
-<div th:if="${param.logout}">
-    <p style="color: green;">로그아웃 되었습니다.</p>
+    <!-- 메시지 -->
+    <div th:if="${param.error}" class="message error">
+        로그인 실패: 아이디 또는 비밀번호를 확인하세요.
+    </div>
+    <div th:if="${param.logout}" class="message success">
+        로그아웃 되었습니다.
+    </div>
 </div>
 
 </body>

@@ -1,5 +1,6 @@
 package com.example.board.security.auth;
 
+import com.example.board.dto.UserDto;
 import com.example.board.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
+                .map(UserDto::fromEntity)
                 .map(PrincipalDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 이메일이 없습니다."));
     }
