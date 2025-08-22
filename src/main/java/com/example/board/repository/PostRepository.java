@@ -32,4 +32,9 @@ public interface PostRepository extends JpaRepository<Post,Long> {
         //join fetch는 inner join으로 작동해서 댓글 없으면 안 보일수있음
     Optional<Post> findPostWithComments(@Param("id") Long id);
 
+    //서버 하나일떄는 오버라이트 괜찮지만 분산 서버면 문제됨 동시성 문제
+    @Modifying
+    @Transactional
+    @Query("UPDATE Post p SET p.likes = :likesCount WHERE p.ID = :postId")
+    void updateLikesCount(@Param("postId") Long postId, @Param("likesCount") Long likesCount);
 }

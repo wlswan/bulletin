@@ -41,6 +41,8 @@ public class Post {
     @NotNull //애플리케이션 계층 dto에서 유효성 검증
     private long views = 0;
 
+    private int likes = 0;
+
     @PrePersist
     public void prePersist(){
         this.createdAt = LocalDateTime.now();

@@ -3,11 +3,11 @@ package com.example.board.controller;
 import com.example.board.domain.Post;
 import com.example.board.dto.CommentForm;
 import com.example.board.dto.PostDto;
-import com.example.board.security.User;
 import com.example.board.security.auth.PrincipalDetails;
 import com.example.board.service.CommentService;
 import com.example.board.service.PostService;
-import com.example.board.service.PostViewService;
+import com.example.board.service.like.PostLikeService;
+import com.example.board.service.view.PostViewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
-    private final CommentService commentService;
     private final PostViewService postViewService;
+    private final PostLikeService postLikeService;
 
 @GetMapping
 public String list(
@@ -64,14 +64,21 @@ public String list(
 
 
     @GetMapping("/{id}")
-    public String detail(@PathVariable Long id , Model model) {
+    public String detail(@PathVariable Long id ,
+                         @AuthenticationPrincipal PrincipalDetails principalDetails,
+                         Model model) {
         Post post = postService.findPostWithComments(id);
         postViewService.increaseViewCount(id);
+        boolean hasLiked = false;
+        long likeCount = postLikeService.getCachedLikeCount(id);
+        hasLiked = postLikeService.hasUserLiked(id, principalDetails.getUserId().toString());
 
         int cachedCount = postViewService.getCachedCount(id);
         post.setViews(post.getViews()+cachedCount);
         model.addAttribute("post",post);
         model.addAttribute("commentForm", new CommentForm());
+        model.addAttribute("likeCount", likeCount);
+        model.addAttribute("hasLiked", hasLiked);
         return "detail";
     }
 
@@ -130,4 +137,13 @@ public String list(
         postService.update(id,postDto,PrincipalDetails.getUserId());
         return "redirect:/posts/{id}";
     }
+
+    @PostMapping("/{id}/like")
+    public String toggleLike(@PathVariable Long id,
+                             @AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        postLikeService.toggleLike(id, principalDetails.getUserId().toString());
+        return "redirect:/posts/" + id;
+    }
+
 }

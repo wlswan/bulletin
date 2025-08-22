@@ -1,4 +1,4 @@
-package com.example.board.service;
+package com.example.board.service.view;
 
 import com.example.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
