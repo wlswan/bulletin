@@ -37,4 +37,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Transactional
     @Query("UPDATE Post p SET p.likes = :likesCount WHERE p.ID = :postId")
     void updateLikesCount(@Param("postId") Long postId, @Param("likesCount") Long likesCount);
+
+    @Query("SELECT p FROM Post p WHERE p.likes>= 10 or p.views >=30 ORDER BY p.createdAt DESC")
+    Page<Post> findHots(Pageable pageable);
 }

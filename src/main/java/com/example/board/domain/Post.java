@@ -43,6 +43,9 @@ public class Post {
 
     private int likes = 0;
 
+    @Column(nullable = false)
+    private boolean isHot = false;
+
     @PrePersist
     public void prePersist(){
         this.createdAt = LocalDateTime.now();

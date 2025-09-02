@@ -34,6 +34,7 @@ public String list(
         Pageable pageable
         , @RequestParam(required = false) String type
         , @RequestParam(required = false) String keyword
+        , @RequestParam(defaultValue = "all") String mode
         ,Model model) {
     Page<Post> postPage;
 
@@ -41,7 +42,11 @@ public String list(
         postPage = postService.search(type,keyword,pageable);
     }
     else {
-        postPage = postService.findAll(pageable);
+        if("hot".equals(mode)) {
+            postPage = postService.findHots(pageable);
+        }else {
+            postPage = postService.findAll(pageable);
+        }
     }
 
     int nowPage = postPage.getNumber() + 1; //현재 페이지
@@ -57,6 +62,7 @@ public String list(
     model.addAttribute("endPage", endPage);
     model.addAttribute("type", type);
     model.addAttribute("keyword", keyword);
+    model.addAttribute("mode", mode);
 
     return "list";
 }
