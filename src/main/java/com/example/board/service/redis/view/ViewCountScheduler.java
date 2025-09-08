@@ -1,4 +1,4 @@
-package com.example.board.service.view;
+package com.example.board.service.redis.view;
 
 import com.example.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;

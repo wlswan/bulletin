@@ -4,10 +4,9 @@ import com.example.board.domain.Post;
 import com.example.board.dto.CommentForm;
 import com.example.board.dto.PostDto;
 import com.example.board.security.auth.PrincipalDetails;
-import com.example.board.service.CommentService;
 import com.example.board.service.PostService;
-import com.example.board.service.like.PostLikeService;
-import com.example.board.service.view.PostViewService;
+import com.example.board.service.redis.like.PostLikeService;
+import com.example.board.service.redis.view.PostViewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,6 +34,7 @@ public String list(
         , @RequestParam(required = false) String type
         , @RequestParam(required = false) String keyword
         , @RequestParam(defaultValue = "all") String mode
+        , @AuthenticationPrincipal PrincipalDetails principalDetails
         ,Model model) {
     Page<Post> postPage;
 
@@ -55,6 +55,8 @@ public String list(
 
     int startPage = ((nowPage - 1) / pageSize) * pageSize + 1; // 내가 속해있는 페이지 9개 그룹 중 제일 처음
     int endPage = Math.min(startPage + pageSize - 1, totalPages); //마지막 페이지
+
+
 
     model.addAttribute("page", postPage);
     model.addAttribute("nowPage", nowPage);

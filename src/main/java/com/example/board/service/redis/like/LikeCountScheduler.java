@@ -1,4 +1,4 @@
-package com.example.board.service.like;
+package com.example.board.service.redis.like;
 
 import com.example.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;

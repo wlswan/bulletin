@@ -1,5 +1,7 @@
 package com.example.board.service;
 
+import com.example.board.alarm.NotificationService;
+import com.example.board.alarm.NotificationType;
 import com.example.board.domain.Comment;
 import com.example.board.domain.Post;
 import com.example.board.dto.CommentForm;
@@ -23,6 +25,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
 
     public Comment findById(Long id) {
@@ -32,13 +35,22 @@ public class CommentService {
 
     public void saveComment(CommentForm commentForm, Long userId) {
         Post post = postRepository.findById(commentForm.getPostId()).orElseThrow(() -> new PostNotFoundException("게시글이 존재하지 않습니다."));
-        User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다."));
+        User writer = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다."));
         Comment comment = new Comment();
         comment.setPost(post);
-        comment.setUser(user);
+        comment.setUser(writer);
         comment.setContent(commentForm.getContent());
 
         commentRepository.save(comment);
+
+        notificationService.sendNotification(
+                post.getUser().getEmail(),
+                writer.getEmail(),
+                comment.getContent(),
+                NotificationType.COMMENT
+        );
+
+
 
     }
 

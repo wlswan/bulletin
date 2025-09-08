@@ -1,6 +1,6 @@
 package com.example.board.security.auth.oauth;
 
-import com.example.board.dto.UserDto;
+import com.example.board.security.UserDto;
 import com.example.board.security.User;
 import com.example.board.security.UserRepository;
 import com.example.board.security.auth.PrincipalDetails;
@@ -15,8 +15,6 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

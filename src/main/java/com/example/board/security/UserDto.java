@@ -1,6 +1,5 @@
-package com.example.board.dto;
+package com.example.board.security;
 
-import com.example.board.security.User;
 import com.example.board.security.auth.Role;
 import lombok.Data;
 

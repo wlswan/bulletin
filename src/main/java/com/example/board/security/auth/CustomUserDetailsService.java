@@ -1,6 +1,6 @@
 package com.example.board.security.auth;
 
-import com.example.board.dto.UserDto;
+import com.example.board.security.UserDto;
 import com.example.board.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
