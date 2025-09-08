@@ -44,8 +44,8 @@ public class CommentService {
         commentRepository.save(comment);
 
         notificationService.sendNotification(
-                post.getUser().getEmail(),
-                writer.getEmail(),
+                post.getUser(),
+                writer,
                 comment.getContent(),
                 NotificationType.COMMENT
         );

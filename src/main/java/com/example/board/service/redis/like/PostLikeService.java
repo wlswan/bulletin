@@ -47,8 +47,8 @@ public class PostLikeService {
 
 
             notificationService.sendNotification(
-                    post.getUser().getEmail(),
-                    sender.getEmail(),
+                    post.getUser(),
+                    sender,
                     null,
                     NotificationType.LIKE
             );
