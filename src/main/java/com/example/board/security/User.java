@@ -1,7 +1,7 @@
 package com.example.board.security;
 
-import com.example.board.domain.Comment;
-import com.example.board.domain.Post;
+import com.example.board.comment.Comment;
+import com.example.board.post.Post;
 import com.example.board.security.auth.Role;
 import jakarta.persistence.*;
 import lombok.Getter;

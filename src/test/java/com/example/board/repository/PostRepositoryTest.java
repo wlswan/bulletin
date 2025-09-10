@@ -1,6 +1,7 @@
 package com.example.board.repository;
 
-import com.example.board.domain.Post;
+import com.example.board.post.Post;
+import com.example.board.post.PostRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -9,13 +10,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class PostRepositoryTest {
 
     @Autowired
-    private  PostRepository postRepository;
+    private PostRepository postRepository;
 
     @Test
     void savaAndFind() {

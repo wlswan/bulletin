@@ -1,6 +1,6 @@
-package com.example.board.service.redis.like;
+package com.example.board.like;
 
-import com.example.board.repository.PostRepository;
+import com.example.board.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;

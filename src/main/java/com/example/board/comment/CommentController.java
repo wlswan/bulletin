@@ -1,9 +1,6 @@
-package com.example.board.controller;
+package com.example.board.comment;
 
-import com.example.board.domain.Comment;
-import com.example.board.dto.CommentFormDto;
 import com.example.board.security.auth.PrincipalDetails;
-import com.example.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;

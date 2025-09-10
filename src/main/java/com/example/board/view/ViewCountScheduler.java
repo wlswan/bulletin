@@ -1,6 +1,6 @@
-package com.example.board.service.redis.view;
+package com.example.board.view;
 
-import com.example.board.repository.PostRepository;
+import com.example.board.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;

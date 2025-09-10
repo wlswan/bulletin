@@ -1,12 +1,9 @@
-package com.example.board.controller;
+package com.example.board.post;
 
-import com.example.board.domain.Post;
-import com.example.board.dto.CommentFormDto;
-import com.example.board.dto.PostDto;
+import com.example.board.comment.CommentFormDto;
 import com.example.board.security.auth.PrincipalDetails;
-import com.example.board.service.PostService;
-import com.example.board.service.redis.like.PostLikeService;
-import com.example.board.service.redis.view.PostViewService;
+import com.example.board.like.PostLikeService;
+import com.example.board.view.PostViewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

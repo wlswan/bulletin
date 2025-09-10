@@ -1,14 +1,11 @@
-package com.example.board.service;
+package com.example.board.comment;
 
 import com.example.board.alarm.NotificationService;
 import com.example.board.alarm.NotificationType;
-import com.example.board.domain.Comment;
-import com.example.board.domain.Post;
-import com.example.board.dto.CommentFormDto;
+import com.example.board.post.Post;
 import com.example.board.exception.CommentNotFoundException;
 import com.example.board.exception.PostNotFoundException;
-import com.example.board.repository.CommentRepository;
-import com.example.board.repository.PostRepository;
+import com.example.board.post.PostRepository;
 import com.example.board.security.User;
 import com.example.board.security.UserRepository;
 import com.example.board.security.auth.Role;

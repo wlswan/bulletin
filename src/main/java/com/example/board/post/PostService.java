@@ -1,9 +1,6 @@
-package com.example.board.service;
+package com.example.board.post;
 
-import com.example.board.domain.Post;
-import com.example.board.dto.PostDto;
 import com.example.board.exception.PostNotFoundException;
-import com.example.board.repository.PostRepository;
 import com.example.board.security.User;
 import com.example.board.security.UserRepository;
 import com.example.board.security.auth.Role;

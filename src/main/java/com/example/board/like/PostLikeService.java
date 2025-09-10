@@ -1,10 +1,10 @@
-package com.example.board.service.redis.like;
+package com.example.board.like;
 
 import com.example.board.alarm.NotificationService;
 import com.example.board.alarm.NotificationType;
-import com.example.board.domain.Post;
+import com.example.board.post.Post;
 import com.example.board.exception.PostNotFoundException;
-import com.example.board.repository.PostRepository;
+import com.example.board.post.PostRepository;
 import com.example.board.security.User;
 import com.example.board.security.UserRepository;
 import lombok.RequiredArgsConstructor;

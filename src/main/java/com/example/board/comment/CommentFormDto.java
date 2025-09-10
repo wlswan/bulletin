@@ -1,4 +1,4 @@
-package com.example.board.dto;
+package com.example.board.comment;
 
 
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.example.board.config;
+package com.example.board.security;
 
 import com.example.board.security.auth.oauth.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;

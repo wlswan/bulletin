@@ -1,5 +1,6 @@
-package com.example.board.domain;
+package com.example.board.comment;
 
+import com.example.board.post.Post;
 import com.example.board.security.User;
 import jakarta.persistence.*;
 import lombok.Getter;

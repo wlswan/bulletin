@@ -76,6 +76,9 @@
 
 ```bash
 git clone https://github.com/wlswan/bulletin.git
+```
+
+```
 cd bulletin
 ```
 ```
