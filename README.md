@@ -63,6 +63,7 @@
 - 사용자가 게시글 상세 페이지 접속 시 **Redis에 반영** (`post:view:{postId}`)
 - `ViewCountScheduler`가 **10초마다 Redis → DB 동기화**
 - 사용자 화면에는 Redis 값을 바로 가져와서 실시간 반영
+- 로그인 시 userId로 비로그인 시에는 guestKey를 쿠키로 발급해서 조회수 중복 제거
 
 
 ---
@@ -99,10 +100,6 @@ cp src/main/resources/application-oauth.yml.example src/main/resources/applicati
 
 ---
 ## 📌 향후 개선 계획
-
-- **조회수 중복 막기**  
-  같은 사람이 계속 새로고침해도 조회수가 무한히 늘어나지 않도록 방지
-
 - **엔티티 Setter 줄이기**  
   엔티티의 값은 직접 바꾸지 않고, 생성자나 필요한 기능 메서드를 통해서만 바꾸도록 개선
 
