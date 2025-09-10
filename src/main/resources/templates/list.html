@@ -42,7 +42,7 @@
             cursor: pointer;
         }
         #unread-count {
-            display: none; /* 기본 숨김 */
+            display: none;
             background: red;
             color: white;
             font-size: 0.75em;
@@ -54,6 +54,7 @@
             right: -15px;
         }
         .dropdown {
+            display: none;
             position: absolute;
             right: 0;
             top: 30px;
@@ -66,9 +67,11 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 999;
         }
-        .hidden { display: none; }
+        .dropdown.show {
+            display: block;
+        }
         .dropdown ul { list-style: none; margin: 0; padding: 0; }
-        .dropdown li { padding: 8px; border-bottom: 1px solid #eee; font-size: 0.9em; }
+        .dropdown li { padding: 8px; border-bottom: 1px solid #eee; font-size: 0.9em; cursor: pointer; }
         .dropdown li:last-child { border-bottom: none; }
         .empty { text-align: center; color: #888; padding: 10px; }
 
@@ -113,9 +116,12 @@
         <span id="unread-count" th:text="${unreadCount != null ? unreadCount : 0}">0</span>
 
         <!-- 드롭다운 -->
-        <div id="notification-dropdown" class="dropdown hidden">
+        <div id="notification-dropdown" class="dropdown">
             <ul id="notification-list"></ul>
             <div class="empty">알림이 없습니다.</div>
+            <div style="text-align:center; padding:8px; border-top:1px solid #eee;">
+                <a href="/notifications">📄 전체 알림 보기</a>
+            </div>
         </div>
     </div>
 
@@ -175,8 +181,37 @@
        th:href="@{/posts(page=${nowPage}, type=${type}, keyword=${keyword}, mode=${mode})}">다음</a>
 </div>
 
+<!-- ✅ WebSocket JS -->
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script src="/js/notifications.js"></script>
+
+<!-- 드롭다운 토글 + 항목 제거 -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const bell = document.getElementById("bell");
+        const dropdown = document.getElementById("notification-dropdown");
+        const list = document.getElementById("notification-list");
+
+        // 벨 클릭 시 드롭다운 토글
+        bell.addEventListener("click", () => {
+            dropdown.classList.toggle("show");
+        });
+
+        // 다른 영역 클릭하면 닫히게
+        document.addEventListener("click", (event) => {
+            if (!bell.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove("show");
+            }
+        });
+
+        // 알림 항목 클릭 시 해당 li만 제거
+        list.addEventListener("click", (e) => {
+            if (e.target.tagName === "LI") {
+                e.target.remove();
+            }
+        });
+    });
+</script>
 </body>
 </html>

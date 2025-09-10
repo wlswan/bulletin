@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>알림 목록</title>
+    <style>
+        .notification { padding: 10px; border-bottom: 1px solid #ddd; cursor: pointer; }
+        .notification.unread { color: black; font-weight: bold; }
+        .notification.read { color: gray; }
+    </style>
+</head>
+<body>
+<h1>알림</h1>
+
+<div th:each="n : ${notifications}"
+     th:class="'notification ' + (${n.read} ? 'read' : 'unread')"
+     th:attr="data-id=${n.id}">
+    <span th:text="'[' + ${n.notificationType} + '] '"></span>
+    <span th:text="${n.sender.email}"></span> :
+    <span th:text="${n.content}"></span>
+    <span th:text="${#temporals.format(n.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".notification.unread").forEach(el => {
+            el.addEventListener("click", () => {
+                const id = el.getAttribute("data-id");
+
+                fetch(`/notifications/${id}/read`, {
+                    method: "POST"
+                })
+                .then(res => res.text())
+                .then(result => {
+                    if (result === "ok") {
+                        // ✅ UI 업데이트
+                        el.classList.remove("unread");
+                        el.classList.add("read");
+                    }
+                });
+            });
+        });
+    });
+</script>
+</body>
+</html>

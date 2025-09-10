@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const bell = document.getElementById("bell");
-    const dropdown = document.getElementById("notification-dropdown");
     const list = document.getElementById("notification-list");
     const unreadCount = document.getElementById("unread-count");
+    const dropdown = document.getElementById("notification-dropdown");
 
+    // WebSocket 연결
     const socket = new SockJS("/ws");
     const stompClient = Stomp.over(socket);
 
@@ -16,23 +16,35 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    bell.addEventListener("click", () => {
-        dropdown.classList.toggle("hidden");
-    });
-
+    // 알림 추가
     function addNotification(notification) {
         const li = document.createElement("li");
 
         li.textContent =
             `[${notification.notificationType}] ${notification.sender}: ${notification.preview} (${notification.createdAt})`;
 
-        list.appendChild(li);
+        // 👉 클릭 시 해당 알림만 삭제
+        li.addEventListener("click", () => {
+            li.remove();
+            updateUnreadCount(-1);
+        });
 
+        list.appendChild(li);
+        updateUnreadCount(1);
+        dropdown.querySelector(".empty").style.display = "none";
+    }
+
+    function updateUnreadCount(delta) {
         let count = parseInt(unreadCount.textContent);
         if (isNaN(count)) count = 0;
-        unreadCount.textContent = count + 1;
-        unreadCount.style.display = "inline-block";
+        count += delta;
+        unreadCount.textContent = count;
 
-        dropdown.querySelector(".empty").style.display = "none";
+        if (count <= 0) {
+            unreadCount.style.display = "none";
+            dropdown.querySelector(".empty").style.display = "block";
+        } else {
+            unreadCount.style.display = "inline-block";
+        }
     }
 });

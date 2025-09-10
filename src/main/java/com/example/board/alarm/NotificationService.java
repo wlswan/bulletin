@@ -7,6 +7,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +15,17 @@ public class NotificationService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final NotificationRepository notificationRepository;
+
+    public List<Notification> getUnReadNotifications(Long receiverId) {
+        return notificationRepository.findByReceiverIdAndIsReadFalseOrderByCreatedAtDesc(receiverId);
+    }
+
+    public void markAsRead(Long id) {
+        Notification notification = notificationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
+        notification.setRead(true);
+        notificationRepository.save(notification);
+    }
+
 
     public void sendNotification(User receiver, User sender, String content, NotificationType type) {
         String preview;
