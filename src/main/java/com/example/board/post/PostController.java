@@ -4,6 +4,9 @@ import com.example.board.comment.CommentFormDto;
 import com.example.board.security.auth.PrincipalDetails;
 import com.example.board.like.PostLikeService;
 import com.example.board.view.PostViewService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/posts")
@@ -71,20 +76,48 @@ public String list(
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id ,
                          @AuthenticationPrincipal PrincipalDetails principalDetails,
+                         HttpServletRequest request,
+                         HttpServletResponse response,
                          Model model) {
         Post post = postService.findPostWithComments(id);
-        postViewService.increaseViewCount(id);
+
+        String userKey;
+        if (principalDetails != null) {
+            userKey = "user:" + principalDetails.getUserId();
+        } else {
+            userKey = "guest:" + getOrCreateGuestKey(request, response);
+        }
+
+        postViewService.increaseViewCount(id,userKey);
         boolean hasLiked = false;
         long likeCount = postLikeService.getCachedLikeCount(id);
         hasLiked = postLikeService.hasUserLiked(id, principalDetails.getUserId().toString());
 
         int cachedCount = postViewService.getCachedCount(id);
         post.setViews(post.getViews()+cachedCount);
+
+
         model.addAttribute("post",post);
         model.addAttribute("commentForm", new CommentFormDto());
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("hasLiked", hasLiked);
         return "detail";
+    }
+
+    private String getOrCreateGuestKey(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if("guestKey".equals(c.getName())){
+                    return c.getValue();
+                }
+            }
+        }
+        String guestKey = UUID.randomUUID().toString();
+        Cookie cookie = new Cookie("guestKey",guestKey);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 2);
+        response.addCookie(cookie);
+        return guestKey;
     }
 
     @GetMapping("/new")

@@ -16,7 +16,7 @@ public class ViewCountScheduler {
 
     @Scheduled(fixedRate = 10*1000) //멑티 서버에서 실행될때는 문제가 있을수도 있음
     public void syncView(){
-        Set<String> keys = redisTemplate.keys("post:view:*");
+        Set<String> keys = redisTemplate.keys("post:view:*:total");
         if(keys == null || keys.isEmpty())
             return;
 
