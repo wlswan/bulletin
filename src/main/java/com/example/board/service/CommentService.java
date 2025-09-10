@@ -4,7 +4,7 @@ import com.example.board.alarm.NotificationService;
 import com.example.board.alarm.NotificationType;
 import com.example.board.domain.Comment;
 import com.example.board.domain.Post;
-import com.example.board.dto.CommentForm;
+import com.example.board.dto.CommentFormDto;
 import com.example.board.exception.CommentNotFoundException;
 import com.example.board.exception.PostNotFoundException;
 import com.example.board.repository.CommentRepository;
@@ -33,13 +33,13 @@ public class CommentService {
 
     }
 
-    public void saveComment(CommentForm commentForm, Long userId) {
-        Post post = postRepository.findById(commentForm.getPostId()).orElseThrow(() -> new PostNotFoundException("게시글이 존재하지 않습니다."));
+    public void saveComment(CommentFormDto commentFormDto, Long userId) {
+        Post post = postRepository.findById(commentFormDto.getPostId()).orElseThrow(() -> new PostNotFoundException("게시글이 존재하지 않습니다."));
         User writer = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다."));
         Comment comment = new Comment();
         comment.setPost(post);
         comment.setUser(writer);
-        comment.setContent(commentForm.getContent());
+        comment.setContent(commentFormDto.getContent());
 
         commentRepository.save(comment);
 

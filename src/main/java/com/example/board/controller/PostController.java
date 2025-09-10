@@ -1,7 +1,7 @@
 package com.example.board.controller;
 
 import com.example.board.domain.Post;
-import com.example.board.dto.CommentForm;
+import com.example.board.dto.CommentFormDto;
 import com.example.board.dto.PostDto;
 import com.example.board.security.auth.PrincipalDetails;
 import com.example.board.service.PostService;
@@ -84,7 +84,7 @@ public String list(
         int cachedCount = postViewService.getCachedCount(id);
         post.setViews(post.getViews()+cachedCount);
         model.addAttribute("post",post);
-        model.addAttribute("commentForm", new CommentForm());
+        model.addAttribute("commentForm", new CommentFormDto());
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("hasLiked", hasLiked);
         return "detail";
