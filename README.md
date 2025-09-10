@@ -72,6 +72,37 @@
 - 알림 타입: 댓글, 좋아요 등 (`NotificationType`)
 - WebSocket 기반 실시간 알림 발송
 - 알림 읽음 처리 (`isRead` 플래그)
+## 🚀 실행 방법
+
+```bash
+git clone https://github.com/wlswan/bulletin.git
+cd bulletin
+```
+```
+docker run --name redis -p 6379:6379 -d redis
+```
+
+파일 복사 후 client-id, client-secret 값을 본인 Google/Kakao API 키로 입력하세요.
+``` 
+cp src/main/resources/application-oauth.yml.example src/main/resources/application-oauth.yml
+```
+```
+./gradlew bootRun
+```
+
+
+
+
 
 ---
+## 📌 향후 개선 계획
+
+- **조회수 중복 막기**  
+  같은 사람이 계속 새로고침해도 조회수가 무한히 늘어나지 않도록 방지
+
+- **엔티티 Setter 줄이기**  
+  엔티티의 값은 직접 바꾸지 않고, 생성자나 필요한 기능 메서드를 통해서만 바꾸도록 개선
+
+- **알림 연결 항상 유지**  
+  현재는 게시글 목록 화면에서만 알림이 동작 → 모든 화면에서도 알림을 받을 수 있도록 공통 스크립트로 연결
 
