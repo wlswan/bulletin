@@ -47,7 +47,7 @@ public class PostService {
         post.setTitle(postdto.getTitle());
         post.setContent(postdto.getContent());
 
-        Post savedPost =  postRepository.save(post);
+        Post savedPost =  postRepository.save(post); //영속 상태
 
         if (postdto.getFiles() != null) {
             for(MultipartFile file : postdto.getFiles()) {
@@ -60,8 +60,7 @@ public class PostService {
                     fileAwsData.setS3Key(key);
                     fileAwsData.setFileUrl(fileUrl);
                     fileAwsData.setPost(savedPost);
-                    savedPost.getFiles().add(fileAwsData);
-                    fileAwsDataRepository.save(fileAwsData);
+                    savedPost.getFiles().add(fileAwsData); //더티 체킹이 됨 영속 상태여서
                 }
             }
         }
@@ -76,8 +75,6 @@ public class PostService {
         if(isWriterOrAdmin(userId,post)){
             for (FileAwsData file : post.getFiles()) {
                 s3Service.deleteFile(file.getS3Key());
-                fileAwsDataRepository.delete(file);
-
             }
             postRepository.deleteById(postId);
         }
