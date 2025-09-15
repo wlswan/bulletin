@@ -100,24 +100,24 @@ public class PostService {
                 FileAwsData fileData = fileAwsDataRepository.findById(deleteFileId).orElseThrow(() -> new IllegalArgumentException("파일이 존재하지 않습니다."));
                 s3Service.deleteFile(fileData.getS3Key());
                 post.getFiles().remove(fileData);
-                fileAwsDataRepository.delete(fileData);
 
             }
         }
 
         if (postDto.getFiles() != null) {
             for (MultipartFile newFile : postDto.getFiles()) {
-                String key = s3Service.uploadFile(newFile);
-                String fileUrl = s3Service.getFileUrl(key);
+                if (newFile != null && !newFile.isEmpty()) {
+                    String key = s3Service.uploadFile(newFile);
+                    String fileUrl = s3Service.getFileUrl(key);
 
-                FileAwsData fileAwsData = new FileAwsData();
-                fileAwsData.setFileName(newFile.getOriginalFilename());
-                fileAwsData.setS3Key(key);
-                fileAwsData.setFileUrl(fileUrl);
-                fileAwsData.setPost(post);
+                    FileAwsData fileAwsData = new FileAwsData();
+                    fileAwsData.setFileName(newFile.getOriginalFilename());
+                    fileAwsData.setS3Key(key);
+                    fileAwsData.setFileUrl(fileUrl);
+                    fileAwsData.setPost(post);
 
-                post.getFiles().add(fileAwsData);
-                fileAwsDataRepository.save(fileAwsData);
+                    post.getFiles().add(fileAwsData);
+                }
             }
         }
 
