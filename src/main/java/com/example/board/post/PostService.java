@@ -2,6 +2,7 @@ package com.example.board.post;
 
 import com.example.board.exception.PostNotFoundException;
 import com.example.board.post.event.PostCreatedEvent;
+import com.example.board.post.event.PostDeletedEvent;
 import com.example.board.post.file.FileAwsData;
 import com.example.board.post.file.FileAwsDataRepository;
 import com.example.board.post.file.S3Service;
@@ -47,18 +48,18 @@ public class PostService {
     }
 
     @Transactional
-    public Post create(@Valid PostDto postdto, Long userId) {
+    public Post create(@Valid PostDto postDto, Long userId) {
         Post post = new Post();
         User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 없습니다."));
         post.setUser(user);
-        post.setTitle(postdto.getTitle());
-        post.setContent(postdto.getContent());
+        post.setTitle(postDto.getTitle());
+        post.setContent(postDto.getContent());
 
         Post savedPost =  postRepository.save(post); //영속 상태
 
-        if (postdto.getFiles() != null && !postdto.getFiles().isEmpty()) {
+        if (postDto.getFiles() != null && !postDto.getFiles().isEmpty()) {
             List<Path> tempPaths = new ArrayList<>();
-            for (MultipartFile file : postdto.getFiles()) {
+            for (MultipartFile file : postDto.getFiles()) {
                 if (!file.isEmpty()) {
                     try {
                         Path tempFile = Files.createTempFile("upload-", "-" + file.getOriginalFilename());
@@ -79,15 +80,13 @@ public class PostService {
         Post post = findById(postId);
         User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 없습니다."));
 
-        if(isWriterOrAdmin(userId,post)){
-            for (FileAwsData file : post.getFiles()) {
-                s3Service.deleteFile(file.getS3Key());
-            }
-            postRepository.deleteById(postId);
-        }
-        else {
+        if(!isWriterOrAdmin(userId,post)){
             throw new AccessDeniedException("게시글을 삭제할 권한이 없습니다.");
         }
+
+        List<String> s3Keys = post.getFiles().stream().map(FileAwsData::getS3Key).toList();
+        postRepository.delete(post);
+        applicationEventPublisher.publishEvent(new PostDeletedEvent(s3Keys));
     }
 
 
@@ -100,29 +99,30 @@ public class PostService {
         }
 
         if (deleteFileIds != null && !deleteFileIds.isEmpty()) {
+            List<String> s3Keys = new ArrayList<>();
             for (Long deleteFileId : deleteFileIds) {
                 FileAwsData fileData = fileAwsDataRepository.findById(deleteFileId).orElseThrow(() -> new IllegalArgumentException("파일이 존재하지 않습니다."));
-                s3Service.deleteFile(fileData.getS3Key());
+                s3Keys.add(fileData.getS3Key());
                 post.getFiles().remove(fileData);
-
             }
+            applicationEventPublisher.publishEvent(new PostDeletedEvent(s3Keys));
+
         }
 
         if (postDto.getFiles() != null) {
-            for (MultipartFile newFile : postDto.getFiles()) {
-                if (newFile != null && !newFile.isEmpty()) {
-                    String key = s3Service.uploadFile(newFile);
-                    String fileUrl = s3Service.getFileUrl(key);
-
-                    FileAwsData fileAwsData = new FileAwsData();
-                    fileAwsData.setFileName(newFile.getOriginalFilename());
-                    fileAwsData.setS3Key(key);
-                    fileAwsData.setFileUrl(fileUrl);
-                    fileAwsData.setPost(post);
-
-                    post.getFiles().add(fileAwsData);
+            List<Path> tempPaths = new ArrayList<>();
+            for (MultipartFile file : postDto.getFiles()) {
+                if (!file.isEmpty()) {
+                    try {
+                        Path tempFile = Files.createTempFile("upload-", "-" + file.getOriginalFilename());
+                        file.transferTo(tempFile.toFile());
+                        tempPaths.add(tempFile);
+                    } catch (Exception e) {
+                        throw new RuntimeException("임시 파일 저장 실패", e);
+                    }
                 }
             }
+            applicationEventPublisher.publishEvent(new PostCreatedEvent(post, tempPaths));
         }
 
         post.setContent(postDto.getContent());

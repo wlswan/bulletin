@@ -45,4 +45,16 @@ public class PostEventListener {
             }
         }
     }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handlePostDeleted(PostDeletedEvent event) {
+        for (String key : event.getS3Keys()) {
+            try {
+                s3Service.deleteFile(key);
+            } catch (Exception e) {
+                log.error("S3 삭제 실패: {}", key, e);
+            }
+        }
+    }
 }
