@@ -17,6 +17,7 @@
 - **Database**: H2 (개발용), MySQL (운영 환경)
 - **Cache/Session**: Redis (좋아요 캐싱, 세션 저장소)
 - **Realtime**: WebSocket + STOMP (실시간 알림/댓글 알림)
+- **Infra**: AWS S3 + CloudFront (파일 업로드/조회/삭제)
 - **Build Tool**: Gradle
 
 ---
@@ -70,9 +71,18 @@
 
 ### 🔔 알림 시스템
 - `Notification` 엔티티로 알림 저장
-- 알림 타입: 댓글, 좋아요 등 (`NotificationType`)
+- 알림 타입: 댓글, 좋아요 
 - WebSocket 기반 실시간 알림 발송
-- 알림 읽음 처리 (`isRead` 플래그)
+- 알림 읽음 처리
+
+
+---
+### 📂파일 업로드 
+- AWS S3 버킷과 CloudFront 기반 파일 업로/조회/삭제
+- 게시글 작성/수정  첨부파일 업로드 및 삭제 가능
+- 이벤트 기반 비동기 처리-> 업로드와 DB 저장 분리 
+
+---
 ## 🚀 실행 방법
 
 ```bash
@@ -86,9 +96,9 @@ cd bulletin
 docker run --name redis -p 6379:6379 -d redis
 ```
 
-파일 복사 후 client-id, client-secret 값을 본인 Google/Kakao API 키로 입력하세요.
+아래 파일을 복사한 뒤 OAuth2 Client ID/Secret, S3 버킷 이름, CloudFront 주소, AccessKey, SecretKey 등을 입력하세요.
 ``` 
-cp src/main/resources/application-oauth.yml.example src/main/resources/application-oauth.yml
+cp src/main/resources/application-secret.yml.example src/main/resources/application-sercet.yml
 ```
 ```
 ./gradlew bootRun
@@ -96,13 +106,15 @@ cp src/main/resources/application-oauth.yml.example src/main/resources/applicati
 
 
 
+## ⚡ 개발 중 겪은 문제들
 
+### 📂 파일 업로드 관련
+- **게시글 생성 지연 문제**  
+  S3 업로드(IO 작업) 때문에 게시글 저장 응답이 늦어짐  
+  -> DB 저장과 파일 업로드를 분리 → `@TransactionalEventListener(AFTER_COMMIT)` + `@Async` 로 비동기 이벤트 처리
 
----
-## 📌 향후 개선 계획
-- **엔티티 Setter 줄이기**  
-  엔티티의 값은 직접 바꾸지 않고, 생성자나 필요한 기능 메서드를 통해서만 바꾸도록 개선
+- **MultipartFile 생명주기 문제**  
+  HTTP 요청이 끝나면 MultipartFile이 소멸되어 비동기 이벤트에서 접근 불가  
+  -> 업로드 요청 시 `Files.createTempFile` 로 임시 디스크에 저장하고, 이벤트에는 파일 경로(Path)만 전달  
 
-- **알림 연결 항상 유지**  
-  현재는 게시글 목록 화면에서만 알림이 동작 → 모든 화면에서도 알림을 받을 수 있도록 공통 스크립트로 연결
 
