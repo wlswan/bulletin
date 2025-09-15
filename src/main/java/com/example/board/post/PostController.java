@@ -79,7 +79,7 @@ public String list(
                          HttpServletRequest request,
                          HttpServletResponse response,
                          Model model) {
-        Post post = postService.findPostWithComments(id);
+        Post post = postService.findPostWithCommentsAndFiles(id);
 
         String userKey;
         if (principalDetails != null) {

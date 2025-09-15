@@ -31,6 +31,9 @@ public interface PostRepository extends JpaRepository<Post,Long> {
         //join fetch는 inner join으로 작동해서 댓글 없으면 안 보일수있음
     Optional<Post> findPostWithComments(@Param("id") Long id);
 
+    @Query("SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.files WHERE p.id = :id")
+    Optional<Post> findPostWithFiles(@Param("id") Long id);
+
     //서버 하나일떄는 오버라이트 괜찮지만 분산 서버면 문제됨 동시성 문제
     @Modifying
     @Transactional
@@ -39,4 +42,5 @@ public interface PostRepository extends JpaRepository<Post,Long> {
 
     @Query("SELECT p FROM Post p WHERE p.likes>= 10 or p.views >=30 ORDER BY p.createdAt DESC")
     Page<Post> findHots(Pageable pageable);
+
 }

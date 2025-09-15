@@ -1,6 +1,7 @@
 package com.example.board.post;
 
 import com.example.board.comment.Comment;
+import com.example.board.post.file.FileAwsData;
 import com.example.board.security.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -45,8 +46,11 @@ public class Post {
     @Column(nullable = false)
     private boolean isHot = false;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FileAwsData> files = new ArrayList<>();
+
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
 

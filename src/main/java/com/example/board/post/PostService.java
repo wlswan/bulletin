@@ -1,6 +1,9 @@
 package com.example.board.post;
 
 import com.example.board.exception.PostNotFoundException;
+import com.example.board.post.file.FileAwsData;
+import com.example.board.post.file.FileAwsDataRepository;
+import com.example.board.post.file.S3Service;
 import com.example.board.security.User;
 import com.example.board.security.UserRepository;
 import com.example.board.security.auth.Role;
@@ -12,6 +15,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +25,8 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final FileAwsDataRepository fileAwsDataRepository;
+    private final S3Service s3Service;
 
     public Page<Post> findAll(Pageable pageable) {
         return postRepository.findAll(pageable);
@@ -37,7 +45,26 @@ public class PostService {
         post.setUser(user);
         post.setTitle(postdto.getTitle());
         post.setContent(postdto.getContent());
-        return postRepository.save(post);
+
+        Post savedPost =  postRepository.save(post);
+
+        if (postdto.getFiles() != null) {
+            for(MultipartFile file : postdto.getFiles()) {
+                if (!file.isEmpty()) {
+                    String key = s3Service.uploadFile(file);
+                    String fileUrl = s3Service.getFileUrl(key);
+
+                    FileAwsData fileAwsData = new FileAwsData();
+                    fileAwsData.setFileName(file.getOriginalFilename());
+                    fileAwsData.setS3Key(key);
+                    fileAwsData.setFileUrl(fileUrl);
+                    fileAwsData.setPost(savedPost);
+
+                    fileAwsDataRepository.save(fileAwsData);
+                }
+            }
+        }
+        return savedPost;
     }
 
     public void delete(Long postId, Long userId) {
@@ -94,5 +121,17 @@ public class PostService {
 
     public Page<Post> findHots(Pageable pageable) {
         return postRepository.findHots(pageable);
+    }
+
+    public Post findPostWithCommentsAndFiles(Long id) {
+        Post postWithComments = postRepository.findPostWithComments(id)
+                .orElseThrow(() -> new PostNotFoundException("게시글이 없습니다."));
+
+        Post postWithFiles = postRepository.findPostWithFiles(id)
+                .orElseThrow(() -> new PostNotFoundException("게시글이 없습니다."));
+
+        postWithComments.setFiles(postWithFiles.getFiles());
+
+        return postWithComments;
     }
 }
