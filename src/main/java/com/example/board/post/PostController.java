@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -156,6 +157,13 @@ public String list(
         PostDto postDto = new PostDto();
         postDto.setContent(post.getContent());
         postDto.setTitle(post.getTitle());
+
+        List<FileResponseDto> fileDtos = post.getFiles().stream()
+                .map(f -> new FileResponseDto(f.getId(), f.getFileName(), f.getFileUrl()))
+                .toList();
+        postDto.setExistingFiles(fileDtos);
+
+
         model.addAttribute("postDto",postDto);
         model.addAttribute("postId", id);
         return "edit";
@@ -165,6 +173,7 @@ public String list(
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute PostDto postDto,
                          BindingResult bindingResult,
+                         @RequestParam(value = "deleteFileIds",required = false) List<Long> deleteFileIds,
                          @AuthenticationPrincipal PrincipalDetails PrincipalDetails,
                          Model model) {
         if(bindingResult.hasErrors()) {
@@ -172,7 +181,8 @@ public String list(
             model.addAttribute("postId", id);
             return "edit";
         }
-        postService.update(id,postDto,PrincipalDetails.getUserId());
+
+        postService.update(id,postDto,deleteFileIds,PrincipalDetails.getUserId());
         return "redirect:/posts/{id}";
     }
 

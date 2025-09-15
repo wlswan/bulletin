@@ -16,4 +16,7 @@ public class PostDto {
     private String content;
 
     private List<MultipartFile> files;
+
+    private List<FileResponseDto> existingFiles;
+
 }

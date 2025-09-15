@@ -67,12 +67,20 @@
             color: red;
             font-size: 0.85rem;
         }
+
+        ul {
+            padding-left: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
 <h1>✏ 게시글 수정</h1>
 
-<form th:action="@{'/posts/' + ${postId}}" method="post" th:object="${postDto}">
+<form th:action="@{'/posts/' + ${postId}}" method="post" th:object="${postDto}" enctype="multipart/form-data">
     <input type="hidden" name="_method" value="put"/>
 
     <p>
@@ -85,6 +93,25 @@
         <label for="content">내용</label><br/>
         <textarea th:field="*{content}" rows="8" id="content" placeholder="내용을 입력하세요"></textarea>
         <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="error"></span>
+    </p>
+
+    <!-- 기존 첨부파일 -->
+    <section th:if="${!#lists.isEmpty(postDto.existingFiles)}">
+        <h3>기존 첨부파일</h3>
+        <ul>
+            <li th:each="file : ${postDto.existingFiles}">
+                <a th:href="${file.fileUrl}" th:text="${file.fileName}" target="_blank"></a>
+                <label>
+                    <input type="checkbox" name="deleteFileIds" th:value="${file.id}"/> 삭제
+                </label>
+            </li>
+        </ul>
+    </section>
+
+    <!-- 새 파일 추가 -->
+    <p>
+        <label for="files">새 첨부파일 추가</label><br/>
+        <input type="file" id="files" name="files" multiple/>
     </p>
 
     <p>

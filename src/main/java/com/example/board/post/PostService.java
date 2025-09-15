@@ -39,6 +39,7 @@ public class PostService {
         return postRepository.findPostWithComments(id).orElseThrow(() -> new PostNotFoundException("해당 게시글을 찾을 수 없습니다."));
     }
 
+    @Transactional
     public Post create(@Valid PostDto postdto, Long userId) {
         Post post = new Post();
         User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 없습니다."));
@@ -59,7 +60,7 @@ public class PostService {
                     fileAwsData.setS3Key(key);
                     fileAwsData.setFileUrl(fileUrl);
                     fileAwsData.setPost(savedPost);
-
+                    savedPost.getFiles().add(fileAwsData);
                     fileAwsDataRepository.save(fileAwsData);
                 }
             }
@@ -67,11 +68,17 @@ public class PostService {
         return savedPost;
     }
 
+    @Transactional
     public void delete(Long postId, Long userId) {
         Post post = findById(postId);
         User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 없습니다."));
 
         if(isWriterOrAdmin(userId,post)){
+            for (FileAwsData file : post.getFiles()) {
+                s3Service.deleteFile(file.getS3Key());
+                fileAwsDataRepository.delete(file);
+
+            }
             postRepository.deleteById(postId);
         }
         else {
@@ -81,11 +88,37 @@ public class PostService {
 
 
     @Transactional
-    public void update(Long id, PostDto postDto, Long userId) {
+    public void update(Long id, PostDto postDto, List<Long> deleteFileIds, Long userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시물이 존재하지 않습니다."));
 
         if(!isWriterOrAdmin(userId,post)) {
             throw new AccessDeniedException("게시글에 수정할 권한이 없습니다.");
+        }
+
+        if (deleteFileIds != null && !deleteFileIds.isEmpty()) {
+            for (Long deleteFileId : deleteFileIds) {
+                FileAwsData fileData = fileAwsDataRepository.findById(deleteFileId).orElseThrow(() -> new IllegalArgumentException("파일이 존재하지 않습니다."));
+                s3Service.deleteFile(fileData.getS3Key());
+                post.getFiles().remove(fileData);
+                fileAwsDataRepository.delete(fileData);
+
+            }
+        }
+
+        if (postDto.getFiles() != null) {
+            for (MultipartFile newFile : postDto.getFiles()) {
+                String key = s3Service.uploadFile(newFile);
+                String fileUrl = s3Service.getFileUrl(key);
+
+                FileAwsData fileAwsData = new FileAwsData();
+                fileAwsData.setFileName(newFile.getOriginalFilename());
+                fileAwsData.setS3Key(key);
+                fileAwsData.setFileUrl(fileUrl);
+                fileAwsData.setPost(post);
+
+                post.getFiles().add(fileAwsData);
+                fileAwsDataRepository.save(fileAwsData);
+            }
         }
 
         post.setContent(postDto.getContent());
