@@ -1,6 +1,7 @@
 package com.example.board.post;
 
 import com.example.board.exception.PostNotFoundException;
+import com.example.board.post.event.PostCreatedEvent;
 import com.example.board.post.file.FileAwsData;
 import com.example.board.post.file.FileAwsDataRepository;
 import com.example.board.post.file.S3Service;
@@ -9,6 +10,7 @@ import com.example.board.security.UserRepository;
 import com.example.board.security.auth.Role;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,6 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,8 +30,10 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final FileAwsDataRepository fileAwsDataRepository;
     private final S3Service s3Service;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final FileAwsDataRepository fileAwsDataRepository;
+
 
     public Page<Post> findAll(Pageable pageable) {
         return postRepository.findAll(pageable);
@@ -49,20 +56,20 @@ public class PostService {
 
         Post savedPost =  postRepository.save(post); //영속 상태
 
-        if (postdto.getFiles() != null) {
-            for(MultipartFile file : postdto.getFiles()) {
+        if (postdto.getFiles() != null && !postdto.getFiles().isEmpty()) {
+            List<Path> tempPaths = new ArrayList<>();
+            for (MultipartFile file : postdto.getFiles()) {
                 if (!file.isEmpty()) {
-                    String key = s3Service.uploadFile(file);
-                    String fileUrl = s3Service.getFileUrl(key);
-
-                    FileAwsData fileAwsData = new FileAwsData();
-                    fileAwsData.setFileName(file.getOriginalFilename());
-                    fileAwsData.setS3Key(key);
-                    fileAwsData.setFileUrl(fileUrl);
-                    fileAwsData.setPost(savedPost);
-                    savedPost.getFiles().add(fileAwsData); //더티 체킹이 됨 영속 상태여서
+                    try {
+                        Path tempFile = Files.createTempFile("upload-", "-" + file.getOriginalFilename());
+                        file.transferTo(tempFile.toFile());
+                        tempPaths.add(tempFile);
+                    } catch (Exception e) {
+                        throw new RuntimeException("임시 파일 저장 실패", e);
+                    }
                 }
             }
+            applicationEventPublisher.publishEvent(new PostCreatedEvent(savedPost, tempPaths));
         }
         return savedPost;
     }

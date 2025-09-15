@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -41,6 +42,19 @@ public class S3Service {
         } catch (IOException e) {
             throw new RuntimeException("S3 업로드 실패", e);
         }
+
+        return key;
+    }
+    public String uploadFile(File file) {
+        String key = UUID.randomUUID() + "_" + file.getName();
+
+        s3Client.putObject(
+                PutObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(key)
+                        .build(),
+                RequestBody.fromFile(file) // 파일 직접 업로드
+        );
 
         return key;
     }
