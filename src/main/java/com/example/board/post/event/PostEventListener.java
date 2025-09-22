@@ -34,7 +34,7 @@ public class PostEventListener {
     public void handlePostCreated(PostCreatedEvent event) {
         Post post = event.getPost();
         long start = System.currentTimeMillis(); // 시작 시간 기록
-        List<Future<?>> futures = new ArrayList<>();
+        List<Future<FileAwsData>> futures = new ArrayList<>();
 
         for (Path path : event.getTempFilePaths()) {
             futures.add(executor.submit(() -> {
@@ -49,22 +49,28 @@ public class PostEventListener {
                     fileAwsData.setFileUrl(fileUrl);
                     fileAwsData.setPost(post);
 
-                    fileAwsDataRepository.save(fileAwsData);
-
                     Files.deleteIfExists(path); // 임시 파일 삭제
+                    return fileAwsData;
                 } catch (Exception e) {
                     log.error("파일 업로드 실패: {}", path.getFileName(), e);
+                    return null;
                 }
             }));
         }
-
-
-        for (Future<?> f : futures) {
+        List<FileAwsData> results = new ArrayList<>();
+        for (Future<FileAwsData> f : futures) {
             try {
-                f.get();
+                FileAwsData data = f.get();
+                if (data != null) {
+                    results.add(data);
+                }
             } catch (Exception e) {
                 log.error("업로드 작업 중 예외 발생", e);
             }
+        }
+
+        if (!results.isEmpty()) {
+            fileAwsDataRepository.saveAll(results);
         }
         long end = System.currentTimeMillis(); // 끝난 시간 기록
         log.info("=== 전체 업로드 완료! 총 소요 시간: {} ms ===", (end - start));
